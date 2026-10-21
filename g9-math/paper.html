@@ -79,6 +79,16 @@
       <button class="btn" id="btnPrintBoth">一起打印</button>
       <span class="small muted">答案卷会另起一页，批改时单独拿。</span>
     </div>
+
+    <div id="mobilePrintHint" class="note blue no-print" style="display:none;margin-top:12px">
+      <b>手机上打印要连 AirPrint 打印机。</b>家里没有的话，把下面这个网址发到电脑上打开再打印，格式最准。
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-sm" id="btnShareLink" style="display:none">发送到电脑</button>
+        <button class="btn btn-sm" id="btnCopyLink">复制网址</button>
+        <button class="btn btn-sm" id="btnPrintAnyway">就用手机打印</button>
+      </div>
+      <div class="small" style="margin-top:8px;word-break:break-all;opacity:.75" id="linkText"></div>
+    </div>
   </div>
 
   <div id="paperOut"></div>
@@ -381,6 +391,36 @@
   U.el('btnPrintStudent').onclick = function () { printAs('student'); };
   U.el('btnPrintKey').onclick = function () { printAs('key'); };
   U.el('btnPrintBoth').onclick = function () { printAs('both'); };
+
+  /* 手机上：提示改用电脑打印，并给一键分享 / 复制网址 */
+  if (U.isMobile()) {
+    var hint = U.el('mobilePrintHint');
+    hint.style.display = 'block';
+    var link = location.href.split('?')[0];
+    U.el('linkText').textContent = link;
+
+    if (navigator.share) {
+      var sb = U.el('btnShareLink');
+      sb.style.display = '';
+      sb.onclick = function () {
+        navigator.share({
+          title: '初三数学诊断卷',
+          text: '在电脑浏览器里打开这个网址，用电脑打印最清楚',
+          url: link
+        }).catch(function () {});
+      };
+    }
+
+    U.el('btnCopyLink').onclick = function () {
+      U.copyText(link).then(function (ok) {
+        U.toast(ok ? '网址已复制，粘贴到微信发给电脑' : '复制失败，请长按上面的网址手动复制');
+      });
+    };
+    U.el('btnPrintAnyway').onclick = function () {
+      hint.style.display = 'none';
+      U.toast('打印面板里选「存储为 PDF」也能先存下来');
+    };
+  }
 
   /* 带 ?auto=1 直接生成，方便从别处一键出卷 */
   if (U.qs('auto') === '1') {

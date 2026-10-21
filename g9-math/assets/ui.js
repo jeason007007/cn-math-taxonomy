@@ -43,11 +43,20 @@
   }
 
   var NAV = [
-    { href: 'index.html', label: '总览' },
+    { href: 'index.html', label: '首页' },
     { href: 'paper.html', label: '出卷' },
     { href: 'grade.html', label: '批改' },
     { href: 'report.html', label: '盲点报告' },
     { href: 'teach.html', label: '讲解' }
+  ];
+
+  /* 手机底部标签栏：只留家长真正会用的五个入口 */
+  var TABS = [
+    { href: 'index.html', label: '首页', match: ['index.html'] },
+    { href: 'paper.html', label: '出卷', match: ['paper.html'] },
+    { href: 'quiz.html', label: '做题', match: ['quiz.html'] },
+    { href: 'report.html', label: '报告', match: ['report.html', 'grade.html'] },
+    { href: 'teach.html', label: '讲解', match: ['teach.html'] }
   ];
 
   function nav(current) {
@@ -60,10 +69,20 @@
       '</div></div>';
   }
 
+  function tabbar(current) {
+    var items = TABS.map(function (t) {
+      var on = (t.match || [t.href]).indexOf(current) !== -1 ? ' on' : '';
+      return '<a class="' + on.trim() + '" href="' + t.href + '">' + t.label + '</a>';
+    }).join('');
+    return '<div class="m-tabbar no-print">' + items + '</div>';
+  }
+
   function mountNav(current) {
     var holder = document.createElement('div');
-    holder.innerHTML = nav(current);
-    document.body.insertBefore(holder.firstChild, document.body.firstChild);
+    holder.innerHTML = nav(current) + tabbar(current);
+    while (holder.firstChild) {
+      document.body.insertBefore(holder.firstChild, document.body.firstChild);
+    }
   }
 
   function toast(msg, ms) {
@@ -117,9 +136,40 @@
       '</div>';
   }
 
+  /* 复制一段文字到剪贴板，失败时退回选中提示 */
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { return true; })
+        .catch(function () { return fallbackCopy(text); });
+    }
+    return Promise.resolve(fallbackCopy(text));
+  }
+
+  function fallbackCopy(text) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /* 手机判断：给「建议用电脑打印」这类提示用 */
+  function isMobile() {
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      (window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+  }
+
   root.UI = {
-    esc: esc, el: el, qs: qs, nav: nav, mountNav: mountNav, toast: toast,
+    esc: esc, el: el, qs: qs, nav: nav, tabbar: tabbar, mountNav: mountNav, toast: toast,
     fmtDate: fmtDate, fmtDay: fmtDay, accuracyClass: accuracyClass,
+    copyText: copyText, isMobile: isMobile,
     choicesHTML: choicesHTML, answerAreaHTML: answerAreaHTML, questionHTML: questionHTML
   };
 })(typeof window !== 'undefined' ? window : globalThis);

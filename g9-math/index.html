@@ -2,44 +2,46 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>初三数学 · 盲点诊断</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F6F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>初三数学 · 每天 20 分钟</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <div class="wrap">
-  <h1>初三数学 · 盲点诊断</h1>
-  <p class="sub">出卷 → 打印 → 做卷 → 批改 → 找盲点 → 讲解 → 新卷。九年级全册 82 个知识点，先修链可一路追到小学。</p>
-
-  <div id="pendingBox"></div>
-
-  <div class="metrics" id="metrics"></div>
-
-  <div class="card" style="margin-top:14px">
-    <div class="btn-row">
-      <a class="btn btn-primary btn-lg" href="paper.html">出卷</a>
-      <a class="btn" href="grade.html">批改</a>
-      <a class="btn" href="report.html">盲点报告</a>
-      <a class="btn" href="teach.html">讲解</a>
-    </div>
+  <div class="hello">
+    <div class="h1" id="greet">初三数学 · 每天 20 分钟</div>
+    <div class="h2" id="subLine">正在读取……</div>
   </div>
 
-  <h2>盲点概览</h2>
-  <div id="blindBox"></div>
+  <div id="todoBox"></div>
+  <div id="actBox"></div>
 
-  <h2>历史测试</h2>
-  <div id="historyBox"></div>
+  <div id="fixWrap"></div>
+  <div id="histWrap"></div>
 
-  <h2>使用说明</h2>
-  <div class="card">
-    <p><strong>一次完整循环大约 40 分钟：</strong>出 20 道题打印出来，孩子做 20 分钟，你在批改页勾出错题，系统给出盲点分析和根因链，再打印讲解卡。下一张卷会自动重点考这些盲点，并直接考根因点来验证判断。</p>
-    <p class="small muted">数据来源：<span id="srcInfo"></span>。题库由 AI 生成、未经教师审核，题目答案建议家长扫一眼再给孩子用。诊断结果是<b>假设</b>，靠下一张卷验证。</p>
-    <div class="btn-row no-print" style="margin-top:12px">
-      <button class="btn btn-sm" id="btnExport">导出数据备份</button>
-      <button class="btn btn-sm" id="btnImport">导入备份</button>
-      <button class="btn btn-sm" id="btnReset">清空重来</button>
-      <input type="file" id="fileImport" accept=".json" style="display:none">
-    </div>
+  <div class="card flat" style="margin-top:22px">
+    <details>
+      <summary class="small muted" style="cursor:pointer">数据与设置</summary>
+      <div style="margin-top:12px">
+        <p class="small muted" style="margin:0 0 10px">
+          所有记录只存在这台设备的浏览器里，不上传服务器，换手机或清理浏览器数据会丢。
+          建议每周导出一次备份。
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-sm" id="btnExport">导出备份</button>
+          <button class="btn btn-sm" id="btnImport">导入备份</button>
+          <button class="btn btn-sm" id="btnReset">清空重来</button>
+          <input type="file" id="fileImport" accept=".json" style="display:none">
+        </div>
+        <p class="small muted" style="margin:12px 0 0">
+          <a href="detail.html">查看详细数据面板</a> ·
+          题库来源 <span id="srcInfo"></span>，AI 生成、未经教师审核，答案建议家长扫一眼。
+        </p>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -47,90 +49,131 @@
 <script src="assets/core.js"></script>
 <script src="assets/store.js"></script>
 <script src="assets/ui.js"></script>
+<script src="assets/quizcore.js"></script>
 <script>
 (function () {
   var S = Store, E = Engine, U = UI;
   U.mountNav('index.html');
 
   var st = S.stats();
-  var meta = E.data.meta;
-
-  /* 待批改 */
   var pending = S.currentTest();
-  if (pending) {
-    U.el('pendingBox').innerHTML =
-      '<div class="note blue">有一张卷还没批改：' + U.fmtDate(pending.at) + '，' +
-      pending.items.length + ' 道题。做完后去<a href="grade.html">批改</a>。</div>';
-  }
-
-  /* 指标 */
-  U.el('metrics').innerHTML = [
-    metric('已做卷数', st.testCount, '张'),
-    metric('累计题目', st.totalQ, '道'),
-    metric('总体正确率', st.accuracy, '%'),
-    metric('当前盲点', st.blindCount, '个'),
-    metric('题库消耗', st.qUsed + '/' + st.qTotal, '')
-  ].join('');
-
-  function metric(k, v, unit) {
-    return '<div class="metric"><div class="k">' + k + '</div><div class="v">' +
-      v + (unit ? '<small> ' + unit + '</small>' : '') + '</div></div>';
-  }
-
-  /* 盲点 */
   var blind = S.blindSpots();
-  if (!blind.length) {
-    U.el('blindBox').innerHTML =
-      '<div class="card flat"><div class="empty"><div class="big">还没有盲点记录</div>' +
-      '先出第一张卷，做完批改后这里就会出现。</div></div>';
-  } else {
-    U.el('blindBox').innerHTML = '<div class="card"><ul class="list">' +
-      blind.slice(0, 8).map(function (b) {
-        return '<li><div class="li-head">' +
-          '<span class="li-title">' + U.esc(b.name) + '</span>' +
-          '<span class="chip ' + (b.isCore ? 'blue' : 'amber') + '">' + b.gradeLabel + '</span>' +
-          '<span class="chip">' + U.esc(b.chapterShort) + '</span>' +
-          (b.downstream ? '<span class="chip red">影响 ' + b.downstream + ' 个后续知识点</span>' : '') +
-          '</div><div class="li-sub">错了 ' + b.wrong + ' 次 / 共做 ' + b.asked +
-          ' 次 · 最近 ' + U.fmtDay(b.lastWrongAt) + '</div></li>';
-      }).join('') + '</ul>' +
-      (blind.length > 8 ? '<p class="small muted" style="margin:10px 0 0">还有 ' + (blind.length - 8) + ' 个，见<a href="report.html">盲点报告</a>。</p>' : '') +
-      '</div>';
-  }
-
-  /* 历史 */
   var done = S.state.tests.filter(function (t) { return t.done; });
-  if (!done.length) {
-    U.el('historyBox').innerHTML = '<div class="card flat"><div class="empty">' +
-      '<div class="big">还没有完成的测试</div>' +
-      '<a class="btn btn-blue" href="paper.html" style="margin-top:10px">出第一张卷</a></div></div>';
+
+  /* ---- 问候 ---- */
+  var hh = new Date().getHours();
+  var word = hh < 6 ? '夜深了' : hh < 11 ? '早上好' : hh < 14 ? '中午好' : hh < 18 ? '下午好' : '晚上好';
+  U.el('greet').textContent = word + '，今天练 20 分钟数学';
+
+  if (!st.testCount) {
+    U.el('subLine').textContent = '还没开始。先做一张 12 道题的小测，做完就知道哪里没打牢。';
   } else {
-    U.el('historyBox').innerHTML = '<div class="card"><ul class="list">' +
-      done.map(function (t) {
-        var acc = t.items.length ? Math.round((t.items.length - t.wrong.length) / t.items.length * 100) : 0;
-        return '<li><div class="li-head">' +
-          '<a class="li-title" href="report.html?test=' + t.id + '">' + U.fmtDate(t.gradedAt || t.at) + '</a>' +
-          '<span class="chip ' + (acc >= 85 ? 'green' : acc >= 60 ? 'amber' : 'red') + '">正确率 ' + acc + '%</span>' +
-          '<span class="chip">' + t.items.length + ' 题</span>' +
-          (t.wrong.length ? '<span class="chip red">错 ' + t.wrong.length + '</span>' : '<span class="chip green">全对</span>') +
-          (t.mode === 'probe' ? '<span class="chip amber">根因验证</span>' : '') +
-          (t.mode === 'mixed' ? '<span class="chip amber">综合</span>' : '') +
-          '</div><div class="li-sub">' + U.esc(t.scopeLabel || '') + '</div></li>';
-      }).join('') + '</ul></div>';
+    U.el('subLine').textContent = '已经做了 ' + st.testCount + ' 张卷、' + st.totalQ +
+      ' 道题，平均做对 ' + st.accuracy + '%。' +
+      (blind.length ? '还有 ' + blind.length + ' 个地方没打牢。' : '暂时没发现明显漏洞。');
   }
 
-  U.el('srcInfo').textContent = meta.source + '，' + meta.coreCount +
-    ' 个初三知识点 + ' + meta.depCount + ' 条先修边';
+  /* ---- 今天该做什么（只给一个建议） ---- */
+  var todo = '';
+  if (pending) {
+    todo = '<div class="note blue"><b>有一张卷等着批改。</b>' + U.fmtDate(pending.at) +
+      ' 出的，' + pending.items.length + ' 道题。孩子做完了就点下面「我来批改」。</div>';
+  } else if (!st.testCount) {
+    todo = '<div class="note"><b>第一次用：</b>建议先「手机上直接做」，12 道题 15 分钟，' +
+      '不用打印机，交卷立刻出结果。</div>';
+  } else if (blind.length >= 3) {
+    todo = '<div class="note"><b>该补了。</b>最近有 ' + blind.length +
+      ' 个地方反复错，先看讲解，再做一张专门考这些点的卷。</div>';
+  } else if (st.accuracy >= 90) {
+    todo = '<div class="note blue"><b>状态不错。</b>正确率 ' + st.accuracy +
+      '%，可以加大难度，或者换「九下」范围试试。</div>';
+  }
+  U.el('todoBox').innerHTML = todo;
 
-  /* 备份 */
+  /* ---- 三个大按钮 ---- */
+  var acts = '';
+
+  if (pending) {
+    acts += act('grade.html?test=' + pending.id, '批改', '我来批改这张卷',
+      '对着答案点对错，点完就出分析', true);
+  }
+
+  acts += act('quiz.html', '做', '手机上直接做',
+    '不用打印，点选项就行，交卷马上出结果', !pending);
+
+  acts += act('paper.html', '卷', '出一张打印卷',
+    '生成 A4 试卷，学生卷和答案卷分开打印', false);
+
+  if (blind.length) {
+    acts += act('teach.html', '讲', '看讲解',
+      '把没打牢的点讲一遍，可以打印出来对着看', false);
+  } else if (st.testCount) {
+    acts += act('report.html', '报', '看分析报告',
+      '每章做对多少、问题出在哪', false);
+  }
+
+  U.el('actBox').innerHTML = acts;
+
+  function act(href, ic, title, sub, primary) {
+    return '<a class="act' + (primary ? ' primary' : '') + '" href="' + href + '">' +
+      '<span class="act-ic">' + ic + '</span>' +
+      '<span class="act-body"><span class="act-t">' + title + '</span>' +
+      '<span class="act-s">' + sub + '</span></span>' +
+      '<span class="act-go">→</span></a>';
+  }
+
+  /* ---- 没打牢的地方 ---- */
+  if (blind.length) {
+    var items = blind.slice(0, 5).map(function (b) {
+      return '<div class="fix">' +
+        '<div class="fix-body">' +
+        '<div class="fix-t">' + U.esc(b.name) + '</div>' +
+        '<div class="fix-s">' + b.gradeLabel + '内容 · 错过 ' + b.wrong + ' 次' +
+        (b.downstream ? ' · 后面 ' + b.downstream + ' 个知识点要用到它' : '') +
+        '</div></div>' +
+        '<a class="btn btn-sm" href="teach.html?topics=' + encodeURIComponent(b.topicId) + '">看讲解</a>' +
+        '</div>';
+    }).join('');
+
+    U.el('fixWrap').innerHTML = '<h2>还没打牢的地方</h2>' +
+      '<div class="card">' + items +
+      (blind.length > 5
+        ? '<p class="small muted" style="margin:12px 0 0">还有 ' + (blind.length - 5) +
+          ' 个，见<a href="report.html">完整报告</a>。</p>' : '') +
+      '</div>';
+  } else if (st.testCount) {
+    U.el('fixWrap').innerHTML = '<h2>还没打牢的地方</h2><div class="card">' +
+      '<div class="empty"><div class="big">暂时没有</div>' +
+      '最近的卷都做对了。可以加大难度，或者换范围试试。</div></div>';
+  }
+
+  /* ---- 最近的测试 ---- */
+  if (done.length) {
+    var rows = done.slice(0, 5).map(function (t) {
+      var acc = t.items.length
+        ? Math.round((t.items.length - t.wrong.length) / t.items.length * 100) : 0;
+      var tone = acc >= 85 ? 'green' : acc >= 60 ? 'amber' : 'red';
+      return '<div class="fix">' +
+        '<div class="fix-body"><div class="fix-t">' + U.fmtDate(t.gradedAt || t.at) + '</div>' +
+        '<div class="fix-s">' + t.items.length + ' 题，错 ' + t.wrong.length + ' 题</div></div>' +
+        '<span class="chip ' + tone + '">' + acc + '%</span>' +
+        '<a class="btn btn-sm" href="report.html?test=' + t.id + '">看报告</a>' +
+        '</div>';
+    }).join('');
+    U.el('histWrap').innerHTML = '<h2>最近的测试</h2><div class="card">' + rows + '</div>';
+  }
+
+  U.el('srcInfo').textContent = E.data.meta.source;
+
+  /* ---- 备份 ---- */
   U.el('btnExport').onclick = function () {
     var blob = new Blob([S.exportJSON()], { type: 'application/json' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = '初三数学诊断备份-' + U.fmtDay(new Date().toISOString()) + '.json';
+    a.download = '初三数学记录-' + U.fmtDay(new Date().toISOString()) + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
-    U.toast('已导出');
+    U.toast('已导出，存到手机文件里');
   };
   U.el('btnImport').onclick = function () { U.el('fileImport').click(); };
   U.el('fileImport').onchange = function (e) {
@@ -143,17 +186,50 @@
         U.toast('导入成功');
         setTimeout(function () { location.reload(); }, 600);
       } catch (err) {
-        U.toast('导入失败：' + err.message);
+        U.toast('这个文件打不开：' + err.message);
       }
     };
     r.readAsText(f);
   };
   U.el('btnReset').onclick = function () {
-    if (confirm('清空所有测试记录和盲点数据？此操作不可撤销，建议先导出备份。')) {
+    if (confirm('清空所有测试记录？清空前建议先导出备份。')) {
       S.reset();
       location.reload();
     }
   };
+
+  /* ---- 首次访问：提示加到主屏幕 ---- */
+  if (U.isMobile() && !localStorage.getItem('g9math.a2hs')) {
+    var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    var tip = document.createElement('div');
+    tip.className = 'note blue';
+    tip.style.cssText = 'margin-top:4px';
+    tip.innerHTML = isIOS
+      ? '<b>建议加到手机桌面。</b>点 Safari 底部中间的「分享」按钮 →「添加到主屏幕」，' +
+        '以后点图标就能直接打开，和 App 一样。<br>' +
+        '<span style="opacity:.85">注意：加到桌面后请固定用桌面图标打开，' +
+        '不要和 Safari 里的页面混着用——两边记录是分开存的。</span>' +
+        '<div style="margin-top:9px"><button class="btn btn-sm">知道了</button></div>'
+      : '<b>建议加到手机桌面。</b>点浏览器右上角菜单 →「添加到主屏幕」，以后点图标就能打开。' +
+        '<div style="margin-top:9px"><button class="btn btn-sm">知道了</button></div>';
+    tip.querySelector('button').onclick = function () {
+      localStorage.setItem('g9math.a2hs', '1');
+      tip.remove();
+    };
+    U.el('actBox').parentNode.insertBefore(tip, U.el('actBox').nextSibling);
+  }
+
+  /* ---- 首次使用：一句话说清循环 ---- */
+  if (!st.testCount) {
+    var flow = document.createElement('div');
+    flow.className = 'card flat';
+    flow.style.marginTop = '14px';
+    flow.innerHTML = '<p class="small muted" style="margin:0">' +
+      '<b style="color:var(--ink-2)">怎么用：</b>' +
+      '手机上做 12 道题 → 交卷马上看对错 → 错的地方看讲解 → 再练一张新卷。' +
+      '想让孩子在纸上写过程，就用「出一张打印卷」，做完回来点「我来批改」。</p>';
+    U.el('actBox').parentNode.insertBefore(flow, U.el('actBox').nextSibling);
+  }
 })();
 </script>
 </body>

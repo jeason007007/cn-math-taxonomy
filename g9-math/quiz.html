@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F6F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>做题 · 初三数学</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="quiz-mode">
+<div class="quiz-wrap">
+  <div id="topBar"></div>
+  <div id="out"></div>
+</div>
+<div id="barHolder"></div>
+
+<script src="data/bundle.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/ui.js"></script>
+<script src="assets/quizcore.js"></script>
+<script>
+(function () {
+  var S = Store, E = Engine, U = UI, Q = QuizCore;
+  U.mountNav('quiz.html');
+  document.body.classList.add('quiz-mode');
+
+  /* 进入做题界面才隐藏底部标签栏，开始页和结果页保留导航 */
+  function markRunning(on) {
+    document.body.classList.toggle('quiz-run', !!on);
+  }
+
+  var DRAFT = 'g9math.quiz.';
+
+  /* ---------- 入口：没有指定卷时，先让家长选题量 ---------- */
+  var testId = U.qs('test');
+  var wantNew = U.qs('new') === '1';
+  var test = testId ? S.getTest(testId) : null;
+
+  if (!test && !wantNew) {
+    renderStart();
+    return;
+  }
+
+  if (!test && wantNew) {
+    test = makeTest(parseInt(U.qs('count') || '12', 10) || 12);
+    if (!test) {
+      U.el('out').innerHTML = '<div class="card"><div class="empty">' +
+        '<div class="big">题库里没题了</div>把范围换一换，或者去<a href="paper.html">出打印卷</a>。</div></div>';
+      return;
+    }
+    history.replaceState(null, '', 'quiz.html?test=' + test.id);
+  }
+
+  /* 有解答题的卷不在手机上判，交给批改页 */
+  var hasShort = test.items.some(function (it) {
+    var q = E.question(it.qid);
+    return q && !Q.isObjective(q);
+  });
+  if (hasShort) {
+    U.el('out').innerHTML = '<div class="card" style="margin-top:16px">' +
+      '<div class="empty"><div class="big">这张卷有解答题</div>' +
+      '<p class="small">解答题要写过程，手机上不方便。请打印出来做，做完到「批改」页判分。</p>' +
+      '<div class="btn-row" style="justify-content:center;margin-top:12px">' +
+      '<a class="btn btn-primary" href="grade.html?test=' + test.id + '">去批改页</a>' +
+      '<a class="btn" href="paper.html">打印这张卷</a></div></div></div>';
+    return;
+  }
+
+  /* ---------- 做题 ---------- */
+  var answers = loadDraft(test.id);
+  var submitted = test.done;
+
+  function loadDraft(id) {
+    try {
+      var raw = localStorage.getItem(DRAFT + id);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveDraft() {
+    try { localStorage.setItem(DRAFT + test.id, JSON.stringify(answers)); } catch (e) {}
+  }
+
+  var items = test.items.map(function (it) {
+    return { it: it, q: E.question(it.qid) };
+  }).filter(function (x) { return x.q; });
+
+  U.el('topBar').innerHTML =
+    '<div class="quiz-top">' +
+    '<div class="qt-row">' +
+    '<a class="qt-back" href="index.html">← 退出</a>' +
+    '<span class="qt-title">初三数学 · 小测</span>' +
+    '<span id="pgText">0 / ' + items.length + '</span>' +
+    '</div>' +
+    '<div class="bar"><i id="pgBar" style="width:0%"></i></div>' +
+    '</div>';
+
+  markRunning(true);
+  U.el('out').innerHTML = items.map(function (x, i) { return qHTML(x.q, i); }).join('');
+
+  U.el('barHolder').innerHTML =
+    '<div class="qz-bar"><div class="inner">' +
+    '<span class="cnt" id="cnt"></span>' +
+    '<button class="btn btn-primary" id="btnSubmit" style="min-height:46px;padding:10px 22px;font-size:15px">交卷</button>' +
+    '</div></div>';
+
+  /* 恢复草稿 */
+  items.forEach(function (x) {
+    var v = answers[x.q.id];
+    if (v == null) return;
+    var card = document.querySelector('.qz[data-qid="' + x.q.id + '"]');
+    if (!card) return;
+    if (x.q.type === 'choice') {
+      Array.prototype.forEach.call(card.querySelectorAll('.opt-btn'), function (b) {
+        b.classList.toggle('on', b.getAttribute('data-k') === v);
+      });
+    } else {
+      var inp = card.querySelector('.qz-input');
+      if (inp) inp.value = v;
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.opt-btn');
+    if (!btn) return;
+    var card = btn.closest('.qz');
+    var qid = card.getAttribute('data-qid');
+    Array.prototype.forEach.call(card.querySelectorAll('.opt-btn'), function (b) {
+      b.classList.remove('on');
+    });
+    btn.classList.add('on');
+    answers[qid] = btn.getAttribute('data-k');
+    saveDraft();
+    refresh();
+  });
+
+  document.addEventListener('input', function (e) {
+    if (!e.target.classList || !e.target.classList.contains('qz-input')) return;
+    var card = e.target.closest('.qz');
+    var qid = card.getAttribute('data-qid');
+    answers[qid] = e.target.value;
+    saveDraft();
+    refresh();
+  });
+
+  function refresh() {
+    var done = 0;
+    items.forEach(function (x) {
+      var v = answers[x.q.id];
+      if (v != null && String(v).trim() !== '') done++;
+    });
+    var pct = items.length ? Math.round(done / items.length * 100) : 0;
+    U.el('pgText').textContent = done + ' / ' + items.length;
+    U.el('pgBar').style.width = pct + '%';
+    U.el('cnt').innerHTML = done === items.length
+      ? '都答完了，可以交卷'
+      : '还剩 <b>' + (items.length - done) + '</b> 题';
+  }
+  refresh();
+
+  U.el('btnSubmit').onclick = function () {
+    var left = items.filter(function (x) {
+      var v = answers[x.q.id];
+      return v == null || String(v).trim() === '';
+    }).length;
+    if (left && !confirm('还有 ' + left + ' 题没答，没答的会算错。确定交卷？')) return;
+    doSubmit();
+  };
+
+  function doSubmit() {
+    var wrong = [];
+    items.forEach(function (x) {
+      var ok = Q.check(x.q, answers[x.q.id]);
+      if (ok === false) wrong.push(x.q.id);
+    });
+    S.submitGrade(test.id, wrong);
+    try { localStorage.removeItem(DRAFT + test.id); } catch (e) {}
+    showResult(wrong);
+  }
+
+  /* ---------- 结果 ---------- */
+  function showResult(wrong) {
+    var wrongSet = {};
+    wrong.forEach(function (id) { wrongSet[id] = 1; });
+    var right = items.length - wrong.length;
+    var pct = items.length ? Math.round(right / items.length * 100) : 0;
+    var tone = pct >= 85 ? 'green' : pct >= 60 ? 'amber' : 'red';
+
+    markRunning(false);
+    U.el('topBar').innerHTML = '';
+    U.el('barHolder').innerHTML = '';
+
+    var h = '<div class="hello" style="margin-top:16px">' +
+      '<div class="h1">交卷了 · 对了 ' + right + ' / ' + items.length + ' 题</div>' +
+      '<div class="h2">正确率 ' + pct + '%。下面是逐题对照，' +
+      (wrong.length ? '错的题看看正确答案和解析。' : '全对，这张卷没暴露新问题。') + '</div></div>';
+
+    h += '<div class="metrics" style="margin-bottom:14px">' +
+      met('正确率', pct + '%') + met('做对', right + ' 题') +
+      met('做错', wrong.length + ' 题') + '</div>';
+
+    h += items.map(function (x, i) {
+      var ok = !wrongSet[x.q.id];
+      var mine = answers[x.q.id];
+      var mineText = mine == null || mine === '' ? '（没答）'
+        : (x.q.type === 'choice' ? mine : mine);
+      return '<div class="qz">' +
+        '<div class="qz-no">第 ' + (i + 1) + ' 题' +
+        '<span class="chip ' + (ok ? 'green' : 'red') + '">' + (ok ? '对' : '错') + '</span></div>' +
+        '<p class="qz-p">' + U.esc(x.q.prompt) + '</p>' +
+        '<div class="qz-fb ' + (ok ? 'ok' : 'bad') + '">' +
+        '<div><b>你的答案：</b>' + U.esc(String(mineText)) + '</div>' +
+        (ok ? '' : '<div style="margin-top:4px"><b>正确答案：</b>' + U.esc(Q.answerText(x.q)) + '</div>') +
+        (x.q.explanation
+          ? '<div style="margin-top:7px;color:var(--ink-2)">' + U.esc(x.q.explanation) + '</div>' : '') +
+        '</div></div>';
+    }).join('');
+
+    h += '<div style="margin-top:18px"><a class="btn btn-primary btn-block" href="report.html?test=' +
+      test.id + '">看这次暴露的薄弱点 →</a></div>';
+    h += '<div class="btn-row" style="margin-top:10px">' +
+      '<a class="btn" href="quiz.html?new=1" style="flex:1">再来一张</a>' +
+      '<a class="btn" href="index.html" style="flex:1">回首页</a></div>';
+
+    U.el('out').innerHTML = h;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function met(k, v) {
+    return '<div class="metric"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
+  }
+
+  /* ---------- 渲染单题 ---------- */
+  function qHTML(q, i) {
+    var head = '<div class="qz-no">第 ' + (i + 1) + ' 题' +
+      '<span>' + (q.type === 'choice' ? '选择题' : '填空题') + '</span></div>';
+    if (q.type === 'choice') {
+      return '<div class="qz" data-qid="' + U.esc(q.id) + '">' + head +
+        '<p class="qz-p">' + U.esc(q.prompt) + '</p>' +
+        (q.choices || []).map(function (c) {
+          return '<button class="opt-btn" data-k="' + U.esc(c.key) + '">' +
+            '<span class="k">' + U.esc(c.key) + '</span>' +
+            '<span>' + U.esc(c.text) + '</span></button>';
+        }).join('') +
+        '</div>';
+    }
+    return '<div class="qz" data-qid="' + U.esc(q.id) + '">' + head +
+      '<p class="qz-p">' + U.esc(q.prompt) + '</p>' +
+      '<input class="qz-input" type="text" autocomplete="off" autocorrect="off" ' +
+      'autocapitalize="off" spellcheck="false" placeholder="在这里填答案">' +
+      '</div>';
+  }
+
+  /* ---------- 开始页 ---------- */
+  function renderStart() {
+    var pending = S.currentTest();
+    var st = S.stats();
+    var h = '<div class="hello">' +
+      '<div class="h1">手机上做题</div>' +
+      '<div class="h2">不用打印、不用装软件。点选项或填答案，交卷马上知道对错，' +
+      '错的地方会自动记进薄弱点。</div></div>';
+
+    if (pending) {
+      h += '<div class="note blue">还有一张卷没批改：' + U.fmtDate(pending.at) +
+        '，' + pending.items.length + ' 题。<a href="grade.html?test=' + pending.id + '">去批改</a></div>';
+    }
+
+    if (st.testCount) {
+      h += '<div class="metrics" style="margin-bottom:16px">' +
+        met('做过', st.testCount + ' 张') +
+        met('平均正确率', st.accuracy + '%') +
+        met('待补的点', st.blindCount + ' 个') + '</div>';
+    }
+
+    h += '<div class="card"><div class="small muted" style="margin-bottom:10px">选个题量开始</div>' +
+      '<a class="act primary" href="quiz.html?new=1&count=12">' +
+      '<span class="act-ic">12</span>' +
+      '<span class="act-body"><span class="act-t">12 道题</span>' +
+      '<span class="act-s">约 15 分钟，平时每天一张正好</span></span>' +
+      '<span class="act-go">→</span></a>' +
+      '<a class="act" href="quiz.html?new=1&count=8">' +
+      '<span class="act-ic">8</span>' +
+      '<span class="act-body"><span class="act-t">8 道题</span>' +
+      '<span class="act-s">约 10 分钟，时间紧的时候用</span></span>' +
+      '<span class="act-go">→</span></a>' +
+      '<a class="act" href="quiz.html?new=1&count=16">' +
+      '<span class="act-ic">16</span>' +
+      '<span class="act-body"><span class="act-t">16 道题</span>' +
+      '<span class="act-s">约 20 分钟，周末多练一点</span></span>' +
+      '<span class="act-go">→</span></a>' +
+      '</div>';
+
+    h += '<div class="card flat"><p class="small muted" style="margin:0">' +
+      '提示：选择题点选项就行；填空题直接打字，分数写成 1/2，多个答案用逗号隔开（顺序不限）。' +
+      '写完点右下角「交卷」。</p></div>';
+
+    U.el('out').innerHTML = h;
+  }
+
+  /* ---------- 出卷 ---------- */
+  function makeTest(count) {
+    var blind = S.blindSpots();
+    var focus = blind.filter(function (b) { return b.isCore; }).map(function (b) { return b.topicId; });
+    var paper = E.generatePaper({
+      scope: { semesters: ['上', '下'] },
+      count: count,
+      shortCount: 0,
+      ratio: { basic: 0.2, standard: 0.45, advanced: 0.35 },
+      hardMode: true,
+      mode: 'normal',
+      focus: focus,
+      probe: [],
+      usedQids: S.state.usedQids,
+      topicStats: S.state.topicStats,
+      seed: Math.floor(Math.random() * 1e9)
+    });
+    if (!paper.count) return null;
+    S.state.tests = S.state.tests.filter(function (t) { return t.done; });
+    return S.createTest(paper, '手机小测 · ' + paper.count + ' 题');
+  }
+})();
+</script>
+</body>
+</html>
