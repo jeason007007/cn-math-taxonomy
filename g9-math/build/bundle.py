@@ -48,6 +48,8 @@ def main():
     ap.add_argument("--out", default="data/bundle.js")
     ap.add_argument("--sh", default="data/sh-questions.json",
                     help="自编解答题（不在上游数据里）")
+    ap.add_argument("--figs", default="data/sh-figs.json",
+                    help="解答题题图（内联 SVG），由 build/make_figs.py 生成")
     args = ap.parse_args()
 
     topics = load(args.src, "topics.json")
@@ -135,6 +137,11 @@ def main():
         out_qs.append(item)
 
     # ---- 5b. 合入自编解答题 ----
+    figs = {}
+    if args.figs and os.path.exists(args.figs):
+        with open(args.figs, encoding="utf-8") as f:
+            figs = json.load(f)
+
     self_qs = []
     if args.sh and os.path.exists(args.sh):
         with open(args.sh, encoding="utf-8") as f:
@@ -159,6 +166,8 @@ def main():
                 "space": q.get("space", 200),
                 "origin": "self",
             }
+            if q["id"] in figs:
+                item["fig"] = figs[q["id"]]
             out_qs.append(item)
             self_qs.append(item)
 
@@ -192,6 +201,7 @@ def main():
         "depCount": len(out_deps),
         "questionCount": len(core_qs),
         "selfAuthored": len(self_qs),
+        "figureCount": sum(1 for q in out_qs if q.get("fig")),
         "shortCount": sum(1 for q in core_qs if q["type"] == "short"),
         "gradeDist": dict(sorted(collections.Counter(tmap[i].get("grade") for i in closure).items())),
         "noQuestionTopics": sorted([t["id"] for t in out_topics if t["isCore"] and q_by_topic[t["id"]] == 0]),
@@ -219,6 +229,7 @@ def main():
     print("先修闭包:   %d" % meta["closureCount"])
     print("先修边:     %d" % meta["depCount"])
     print("题目:       %d" % len(out_qs))
+    print("题图:       %d" % sum(1 for q in out_qs if q.get("fig")))
     print("章节:       %d" % len(chapters))
     print("年级分布:   %s" % meta["gradeDist"])
     print("无题知识点: %d %s" % (len(meta["noQuestionTopics"]), meta["noQuestionTopics"][:10]))

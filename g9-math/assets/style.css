@@ -233,6 +233,16 @@ input:focus, select:focus, textarea:focus {
 .q-choices .c { font-size: 14px; }
 .q-choices.vertical { display: block; }
 .q-choices.vertical .c { display: block; margin-bottom: 3px; }
+
+/* 题图：内联 SVG，宽高自适应；打印时别跨页断开 */
+.q-fig {
+  margin: 8px 0 10px;
+  max-width: 92mm;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.q-fig svg { display: block; width: 100%; height: auto; }
+.q-fig svg text { font-family: inherit; }
 .q .q-line {
   border-bottom: 1px solid var(--line-2); height: 18px;
   margin-top: 6px; width: 66%;

@@ -80,6 +80,8 @@
       <span class="small muted">答案卷会另起一页，批改时单独拿。</span>
     </div>
 
+    <div id="printHelp" class="note red no-print" style="display:none;margin-top:12px"></div>
+
     <div id="mobilePrintHint" class="note blue no-print" style="display:none;margin-top:12px">
       <b>手机上打印要连 AirPrint 打印机。</b>家里没有的话，把下面这个网址发到电脑上打开再打印，格式最准。
       <div class="btn-row" style="margin-top:8px">
@@ -321,6 +323,11 @@
     U.el('btnAgain').style.display = '';
     U.el('printRow').style.display = 'flex';
     U.el('nextRow').style.display = 'flex';
+
+    /* 微信 / 桌面图标里一定打不出来，出了卷就先说清楚 */
+    var env = printEnv();
+    if (env === 'wechat' || env === 'standalone') showPrintHelp(env);
+
     U.el('cfgCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -412,6 +419,7 @@
           : '<p class="small muted" style="margin:0">' + U.esc(q.explanation) + '</p>';
         return '<div class="q"><span class="q-no">' + it.no + '.</span>' +
           '<p class="q-prompt">' + U.esc(q.prompt) + '</p>' +
+          U.figHTML(q) +
           choicesHTMLFor(q) +
           '<p class="small" style="margin:0 0 4px"><b>答案：</b>' + U.esc(q.answer) +
           (it.points ? '　<span class="q-tag">' + it.points + ' 分</span>' : '') +
@@ -432,17 +440,95 @@
       '</div>';
   }
 
-  /* ---- 打印 ---- */
+  /* ---- 打印 ----
+     坑：iOS Safari 要求 window.print() 必须在用户手势里同步调用。
+     原来包在 setTimeout 里，手势上下文丢了，iOS 会静默忽略 ——
+     表现就是「点完闪一下，什么都没发生」。这里改成同步调用。 */
+  function printEnv() {
+    var ua = navigator.userAgent || '';
+    if (/MicroMessenger/i.test(ua)) return 'wechat';
+    if (navigator.standalone === true ||
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)) {
+      return 'standalone';
+    }
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
+    return 'ok';
+  }
+
+  var ENV_HELP = {
+    wechat: {
+      t: '微信里打不了印',
+      s: '微信内置浏览器不支持打印。点右上角「···」，选「在浏览器打开」，再点打印。'
+    },
+    standalone: {
+      t: '从桌面图标打开时打不了印',
+      s: 'iPhone 只在 Safari 里允许打印。请用 Safari 打开这个网址再打印；或者发到电脑上打。'
+    },
+    ios: {
+      t: '没弹出打印面板？',
+      s: '点 Safari 底部的「分享」按钮（方框带箭头），在列表里找「打印」。' +
+         '家里没有 AirPrint 打印机的话，选「存储为 PDF」先存下来，再发到电脑打。'
+    },
+    ok: {
+      t: '没弹出打印面板？',
+      s: '浏览器可能拦住了打印请求。换 Chrome / Edge 打开这个网址再试，或者把网址发到电脑上打印。'
+    }
+  };
+
+  function showPrintHelp(env) {
+    var box = U.el('printHelp');
+    if (!box) return;
+    var h = ENV_HELP[env] || ENV_HELP.ok;
+    box.className = 'note red no-print';
+    box.style.display = 'block';
+    box.innerHTML = '<b>' + h.t + '</b>' + h.s +
+      '<button class="btn btn-sm" id="btnHelpClose" style="margin-left:8px">知道了</button>';
+    U.el('btnHelpClose').onclick = function () { box.style.display = 'none'; };
+  }
+
+  var pendingRestore = null;
+
   function printAs(mode) {
-    document.body.classList.remove('print-student-only', 'print-key-only');
-    if (mode === 'student') document.body.classList.add('print-student-only');
-    if (mode === 'key') document.body.classList.add('print-key-only');
-    setTimeout(function () {
+    var env = printEnv();
+    var body = document.body;
+
+    /* 微信 / 桌面图标这两种环境一定打不出来，别让孩子妈对着死按钮点 */
+    if (env === 'wechat' || env === 'standalone') {
+      showPrintHelp(env);
+      return;
+    }
+
+    body.classList.remove('print-student-only', 'print-key-only');
+    if (mode === 'student') body.classList.add('print-student-only');
+    if (mode === 'key') body.classList.add('print-key-only');
+    /* 强制重排，保证打印样式在快照前已经生效 */
+    void body.offsetHeight;
+
+    if (pendingRestore) window.removeEventListener('afterprint', pendingRestore);
+    var restored = false;
+    function restore() {
+      window.removeEventListener('afterprint', restore);
+      pendingRestore = null;
+      if (restored) return;
+      restored = true;
+      body.classList.remove('print-student-only', 'print-key-only');
+    }
+    pendingRestore = restore;
+    window.addEventListener('afterprint', restore);
+
+    var fired = false;
+    try {
       window.print();
-      setTimeout(function () {
-        document.body.classList.remove('print-student-only', 'print-key-only');
-      }, 400);
-    }, 60);
+      fired = true;
+    } catch (e) {
+      fired = false;
+    }
+
+    /* 桌面浏览器 print() 会阻塞到对话框关闭；iOS 立刻返回，预览是当场快照的，
+       所以这里留 2 秒再恢复样式，避免答案卷还没画出来就被还原。 */
+    setTimeout(restore, 2000);
+
+    if (!fired) showPrintHelp(env);
   }
   U.el('btnPrintStudent').onclick = function () { printAs('student'); };
   U.el('btnPrintKey').onclick = function () { printAs('key'); };
@@ -474,7 +560,12 @@
     };
     U.el('btnPrintAnyway').onclick = function () {
       hint.style.display = 'none';
-      U.toast('打印面板里选「存储为 PDF」也能先存下来');
+      var env = printEnv();
+      if (env === 'wechat' || env === 'standalone') {
+        showPrintHelp(env);
+      } else {
+        U.toast('点上面「打印学生卷」，打印面板里选「存储为 PDF」也能先存下来');
+      }
     };
   }
 

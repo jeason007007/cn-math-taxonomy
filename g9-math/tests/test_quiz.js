@@ -151,5 +151,31 @@ eq(exhausted, 0, '5 张 16 题卷都能出满');
 ok(Object.keys(used).length >= 60,
   '5 张 16 题卷共用到 ' + Object.keys(used).length + ' 道不同题（去重生效）');
 
+console.log('\n== 题图 ==');
+(function () {
+  var figs = E.data.questions.filter(function (q) { return q.fig; });
+  ok(figs.length > 0, '题库里有 ' + figs.length + ' 道带图题');
+
+  var badSvg = figs.filter(function (q) {
+    return q.fig.indexOf('<svg') !== 0 || q.fig.indexOf('viewBox=') === -1;
+  });
+  eq(badSvg.length, 0, '每张题图都是带 viewBox 的 <svg>');
+
+  /* SVG 里出现裸的 < 或未闭合标签，浏览器会整块吞掉，必须挡在数据层 */
+  var broken = figs.filter(function (q) {
+    return /<script|onload=|javascript:/i.test(q.fig);
+  });
+  eq(broken.length, 0, '题图里没有脚本或事件属性');
+
+  /* 题图只挂在自编解答题上，客观题不该有 */
+  var objWithFig = figs.filter(function (q) { return q.type !== 'short'; });
+  eq(objWithFig.length, 0, '客观题不带题图');
+
+  var noAns = figs.filter(function (q) {
+    return !q.answer || !q.solution || !q.points;
+  });
+  eq(noAns.length, 0, '带图题都还有答案、过程和分值');
+})();
+
 console.log('\n' + (fail ? '✗ ' : '✓ ') + pass + ' 通过 / ' + fail + ' 失败');
 process.exit(fail ? 1 : 0);

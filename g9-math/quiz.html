@@ -238,6 +238,7 @@
     if (q.type === 'choice') {
       return '<div class="qz" data-qid="' + U.esc(q.id) + '">' + head +
         '<p class="qz-p">' + U.esc(q.prompt) + '</p>' +
+        U.figHTML(q) +
         (q.choices || []).map(function (c) {
           return '<button class="opt-btn" data-k="' + U.esc(c.key) + '">' +
             '<span class="k">' + U.esc(c.key) + '</span>' +
@@ -247,6 +248,7 @@
     }
     return '<div class="qz" data-qid="' + U.esc(q.id) + '">' + head +
       '<p class="qz-p">' + U.esc(q.prompt) + '</p>' +
+      U.figHTML(q) +
       '<input class="qz-input" type="text" autocomplete="off" autocorrect="off" ' +
       'autocapitalize="off" spellcheck="false" placeholder="在这里填答案">' +
       '</div>';

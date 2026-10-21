@@ -126,12 +126,19 @@
     return '<div class="q-line"></div>';
   }
 
+  /* 题图：内联 SVG，已经过审核的可信内容，不走 esc */
+  function figHTML(q) {
+    if (!q || !q.fig) return '';
+    return '<div class="q-fig">' + q.fig + '</div>';
+  }
+
   /* 试卷上的完整题目 */
   function questionHTML(q, no) {
     var prompt = esc(q.prompt) + (q.type === 'choice' ? '　（　　）' : '');
     return '<div class="q" data-qid="' + esc(q.id) + '">' +
       '<span class="q-no">' + no + '.</span>' +
       '<p class="q-prompt">' + prompt + '</p>' +
+      figHTML(q) +
       choicesHTML(q) +
       answerAreaHTML(q.type, q.space) +
       '</div>';
@@ -170,7 +177,7 @@
   root.UI = {
     esc: esc, el: el, qs: qs, nav: nav, tabbar: tabbar, mountNav: mountNav, toast: toast,
     fmtDate: fmtDate, fmtDay: fmtDay, accuracyClass: accuracyClass,
-    copyText: copyText, isMobile: isMobile,
+    copyText: copyText, isMobile: isMobile, figHTML: figHTML,
     choicesHTML: choicesHTML, answerAreaHTML: answerAreaHTML, questionHTML: questionHTML
   };
 })(typeof window !== 'undefined' ? window : globalThis);
