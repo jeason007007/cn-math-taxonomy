@@ -43,8 +43,9 @@
   }
 
   var NAV = [
-    { href: 'index.html', label: '首页' },
+    { href: 'index.html', label: '总览' },
     { href: 'paper.html', label: '出卷' },
+    { href: 'quiz.html', label: '做题' },
     { href: 'grade.html', label: '批改' },
     { href: 'report.html', label: '盲点报告' },
     { href: 'teach.html', label: '讲解' }
@@ -52,7 +53,7 @@
 
   /* 手机底部标签栏：只留家长真正会用的五个入口 */
   var TABS = [
-    { href: 'index.html', label: '首页', match: ['index.html'] },
+    { href: 'index.html', label: '总览', match: ['index.html'] },
     { href: 'paper.html', label: '出卷', match: ['paper.html'] },
     { href: 'quiz.html', label: '做题', match: ['quiz.html'] },
     { href: 'report.html', label: '报告', match: ['report.html', 'grade.html'] },

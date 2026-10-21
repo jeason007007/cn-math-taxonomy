@@ -151,6 +151,11 @@
     U.el(id).addEventListener('click', function (e) {
       var t = e.target.closest('.opt');
       if (!t) return;
+      /* 锁住的选项：点了要给一句话解释，不能毫无反应 */
+      if (t.getAttribute('data-lock') === '1') {
+        U.toast(t.getAttribute('data-lock-hint') || '这个选项现在还不可用');
+        return;
+      }
       Array.prototype.forEach.call(U.el(id).children, function (c) { c.classList.remove('on'); });
       t.classList.add('on');
       var v = t.getAttribute(attr);
@@ -182,16 +187,58 @@
   /* ---- 模式提示 ---- */
   var probes = S.probeTargets();
   var blind = S.blindSpots();
+
+  /* 没有测试记录时的兜底：拿七、八年级的先修点当「综合」的混入项。
+     小学的点不混——初三卷里出乘法口诀没有意义。 */
+  var crossGrade = (function () {
+    var seen = {}, out = [];
+    E.coreTopics().forEach(function (t) {
+      E.prereqsOf(t.id).forEach(function (e) {
+        var pid = e.id;
+        if (!pid || seen[pid]) return;
+        var p = E.topic(pid);
+        if (!p || p.isCore) return;
+        if (!(p.grade >= 7 && p.grade <= 8)) return;
+        if (!E.questionsOf(pid).length) return;
+        seen[pid] = 1;
+        out.push(pid);
+      });
+    });
+    return out;
+  })();
+
+  /* 当前模式实际要探测的点 */
+  function probeSet(mode) {
+    if (probes.length) return probes;
+    if (mode === 'mixed') return crossGrade;
+    return [];
+  }
+
+  var LOCK_HINT = {
+    probe: '这张卷要靠上一次测试的结果来定题目。先出一张常规卷做完批改，或去「做题」页做一张，回来就能选。'
+  };
+
   (function initModes() {
-    if (!probes.length) {
-      U.el('optProbe').style.opacity = '.4';
-      U.el('optProbe').style.pointerEvents = 'none';
-      U.el('optMixed').style.opacity = '.4';
-      U.el('optMixed').style.pointerEvents = 'none';
+    var hasHistory = probes.length > 0;
+
+    /* 根因验证卷没有诊断数据就无从出题：标成「需先测一次」，但仍然可点、点了给解释。
+       综合卷靠七、八年级先修点兜底，任何状态都能用。 */
+    var optProbe = U.el('optProbe');
+    if (!hasHistory) {
+      optProbe.classList.add('locked');
+      optProbe.setAttribute('data-lock', '1');
+      optProbe.setAttribute('data-lock-hint', LOCK_HINT.probe);
+      if (!optProbe.querySelector('.opt-lock')) {
+        var badge = document.createElement('span');
+        badge.className = 'opt-lock';
+        badge.textContent = '需先测一次';
+        optProbe.appendChild(badge);
+      }
     }
+
     /* 从报告页跳过来时预选模式 */
     var want = U.qs('mode');
-    if ((want === 'probe' || want === 'mixed') && probes.length) {
+    if ((want === 'probe' || want === 'mixed') && probeSet(want).length) {
       Array.prototype.forEach.call(U.el('modeOpts').children, function (c) {
         c.classList.toggle('on', c.getAttribute('data-mode') === want);
       });
@@ -205,7 +252,10 @@
     if (v === 'probe') {
       h.innerHTML = '只考疑似根因知识点（' + probes.length + ' 个），用来验证判断对不对。这些点可能来自七、八年级甚至小学。';
     } else if (v === 'mixed') {
-      h.innerHTML = '约 30% 的题考疑似根因点，其余按范围出。既能继续查漏，又能验证根因。';
+      h.innerHTML = probes.length
+        ? '约 30% 的题考疑似根因点（' + probes.length + ' 个），其余按范围出。既能继续查漏，又能验证根因。'
+        : '约 30% 的题考七、八年级的相关先修点（' + crossGrade.length + ' 个），其余按范围出。' +
+          '做过一次测试后，会自动改成按你的薄弱点混。';
     } else {
       h.innerHTML = blind.length
         ? '按范围均匀出题，其中 ' + blind.length + ' 个历史盲点会被加权，出现概率更高。'
@@ -232,6 +282,12 @@
     var focus = blind.filter(function (b) { return b.isCore; }).map(function (b) { return b.topicId; });
 
     var seed = shuffle ? Math.floor(Math.random() * 1e9) : 20261021;
+    var probe = probeSet(cfg.mode);
+
+    if (cfg.mode === 'probe' && !probe.length) {
+      U.toast(LOCK_HINT.probe);
+      return;
+    }
 
     var paper = E.generatePaper({
       scope: scope,
@@ -241,7 +297,7 @@
       hardMode: (cfg.diff === 'sd' || cfg.diff === 'hard'),
       mode: cfg.mode,
       focus: focus,
-      probe: probes,
+      probe: probe,
       usedQids: S.state.usedQids,
       topicStats: S.state.topicStats,
       seed: seed

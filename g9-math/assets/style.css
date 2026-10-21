@@ -139,6 +139,26 @@ input:focus, select:focus, textarea:focus {
   background: var(--ink); border-color: var(--ink); color: #fff;
 }
 
+/* 还不能选的选项：保持可点（点了给解释），不要做成 pointer-events:none 的死区 */
+.opt.locked {
+  color: var(--ink-3);
+  border-style: dashed;
+  background: #FBFAF7;
+}
+.opt.locked:hover { border-color: var(--ink-3); }
+.opt .opt-lock {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 20px;
+  background: #EFEDE8;
+  color: var(--ink-3);
+  font-size: 11px;
+  line-height: 17px;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+
 /* ---------- 标签 ---------- */
 .chip {
   display: inline-block; padding: 2px 9px; border-radius: 20px;
