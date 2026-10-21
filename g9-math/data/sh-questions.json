@@ -1,0 +1,552 @@
+[
+  {
+    "id": "sh_220_1",
+    "topicId": "cnm_220",
+    "difficulty": "basic",
+    "points": 6,
+    "space": 140,
+    "prompt": "解方程：(2x-1)²=9",
+    "answer": "x=2 或 x=-1",
+    "solution": "由 (2x-1)²=9 得 2x-1=±3。\n当 2x-1=3 时，2x=4，x=2；\n当 2x-1=-3 时，2x=-2，x=-1。\n所以 x=2 或 x=-1。"
+  },
+  {
+    "id": "sh_220_2",
+    "topicId": "cnm_220",
+    "difficulty": "basic",
+    "points": 6,
+    "space": 140,
+    "prompt": "解方程：3(x+2)²-12=0",
+    "answer": "x=0 或 x=-4",
+    "solution": "移项得 3(x+2)²=12，即 (x+2)²=4。\n所以 x+2=±2。\n当 x+2=2 时，x=0；当 x+2=-2 时，x=-4。\n所以 x=0 或 x=-4。"
+  },
+  {
+    "id": "sh_221_1",
+    "topicId": "cnm_221",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "用配方法解方程：x²-6x-7=0",
+    "answer": "x=7 或 x=-1",
+    "solution": "移项：x²-6x=7。\n两边加上一次项系数一半的平方 9：x²-6x+9=7+9。\n即 (x-3)²=16。\n所以 x-3=±4，x=7 或 x=-1。"
+  },
+  {
+    "id": "sh_221_2",
+    "topicId": "cnm_221",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 200,
+    "prompt": "用配方法解方程：2x²-4x-1=0",
+    "answer": "x=1+√6/2 或 x=1-√6/2",
+    "solution": "两边除以 2：x²-2x=1/2。\n两边加上 1：x²-2x+1=1/2+1=3/2。\n即 (x-1)²=3/2。\n所以 x-1=±√6/2，x=1±√6/2。"
+  },
+  {
+    "id": "sh_222_1",
+    "topicId": "cnm_222",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "用公式法解方程：2x²-5x+2=0",
+    "answer": "x=2 或 x=1/2",
+    "solution": "a=2，b=-5，c=2。\nΔ=b²-4ac=25-16=9>0。\nx=(5±3)/4。\n所以 x=2 或 x=1/2。"
+  },
+  {
+    "id": "sh_222_2",
+    "topicId": "cnm_222",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "用公式法解方程：x²+3x-1=0",
+    "answer": "x=(-3+√13)/2 或 x=(-3-√13)/2",
+    "solution": "a=1，b=3，c=-1。\nΔ=9+4=13>0。\nx=(-3±√13)/2。\n所以 x=(-3+√13)/2 或 x=(-3-√13)/2。"
+  },
+  {
+    "id": "sh_224_1",
+    "topicId": "cnm_224",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "用因式分解法解方程：(x-2)²=3(x-2)",
+    "answer": "x=2 或 x=5",
+    "solution": "移项：(x-2)²-3(x-2)=0。\n提公因式：(x-2)[(x-2)-3]=0，即 (x-2)(x-5)=0。\n所以 x-2=0 或 x-5=0，x=2 或 x=5。"
+  },
+  {
+    "id": "sh_224_2",
+    "topicId": "cnm_224",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 170,
+    "prompt": "用因式分解法解方程：2x²-7x+3=0",
+    "answer": "x=3 或 x=1/2",
+    "solution": "十字相乘分解：2x²-7x+3=(2x-1)(x-3)。\n所以 (2x-1)(x-3)=0。\n2x-1=0 或 x-3=0，即 x=1/2 或 x=3。"
+  },
+  {
+    "id": "sh_223_1",
+    "topicId": "cnm_223",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 170,
+    "prompt": "关于 x 的一元二次方程 x²-2x+m=0 有两个不相等的实数根，求 m 的取值范围。",
+    "answer": "m<1",
+    "solution": "方程有两个不相等的实数根，所以 Δ>0。\nΔ=(-2)²-4·1·m=4-4m。\n由 4-4m>0 得 m<1。"
+  },
+  {
+    "id": "sh_223_2",
+    "topicId": "cnm_223",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 200,
+    "prompt": "关于 x 的一元二次方程 (k-1)x²+2x+1=0 有两个实数根，求 k 的取值范围。",
+    "answer": "k≤2 且 k≠1",
+    "solution": "因为是一元二次方程，所以 k-1≠0，即 k≠1。\n有两个实数根，所以 Δ≥0。\nΔ=2²-4(k-1)·1=4-4k+4=8-4k。\n由 8-4k≥0 得 k≤2。\n综上，k≤2 且 k≠1。"
+  },
+  {
+    "id": "sh_226_1",
+    "topicId": "cnm_226",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "已知 x₁、x₂ 是方程 x²-3x-2=0 的两个根，求 x₁²+x₂² 的值。",
+    "answer": "13",
+    "solution": "由根与系数的关系：x₁+x₂=3，x₁x₂=-2。\nx₁²+x₂²=(x₁+x₂)²-2x₁x₂\n=3²-2×(-2)=9+4=13。"
+  },
+  {
+    "id": "sh_226_2",
+    "topicId": "cnm_226",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 180,
+    "prompt": "已知 x₁、x₂ 是方程 2x²-5x+1=0 的两个根，求 1/x₁+1/x₂ 的值。",
+    "answer": "5",
+    "solution": "由根与系数的关系：x₁+x₂=5/2，x₁x₂=1/2。\n1/x₁+1/x₂=(x₁+x₂)/(x₁x₂)\n=(5/2)÷(1/2)=5。"
+  },
+  {
+    "id": "sh_227_1",
+    "topicId": "cnm_227",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "某商品原价 200 元，连续两次降价后售价为 128 元。若每次降价的百分率相同，求这个百分率。",
+    "answer": "20%",
+    "solution": "设每次降价的百分率为 x。\n依题意：200(1-x)²=128。\n(1-x)²=0.64，1-x=±0.8。\n因为 1-x>0，所以 1-x=0.8，x=0.2=20%。\n答：每次降价 20%。"
+  },
+  {
+    "id": "sh_227_2",
+    "topicId": "cnm_227",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "某种病毒经两轮传播后，共有 121 人感染。若每轮中平均每人传染了 x 人，求 x。",
+    "answer": "10",
+    "solution": "第一轮后感染人数为 1+x；\n第二轮后感染人数为 1+x+x(1+x)=(1+x)²。\n依题意 (1+x)²=121。\n因为 1+x>0，所以 1+x=11，x=10。\n答：每轮平均每人传染 10 人。"
+  },
+  {
+    "id": "sh_228_1",
+    "topicId": "cnm_228",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "某商品进价 40 元/件，售价 60 元/件时每月可卖 200 件。售价每降低 1 元，每月销量增加 20 件。要使每月利润为 4480 元，售价应定为多少元？",
+    "answer": "56 元或 54 元",
+    "solution": "设售价降低 x 元，则售价为 (60-x) 元，销量为 (200+20x) 件，单件利润为 (20-x) 元。\n依题意：(20-x)(200+20x)=4480。\n展开：4000+400x-200x-20x²=4480，\n整理得 x²-10x+24=0，\n解得 x=4 或 x=6。\n所以售价为 56 元或 54 元。"
+  },
+  {
+    "id": "sh_228_2",
+    "topicId": "cnm_228",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "用 40 m 长的篱笆靠墙围一块矩形菜地，墙长 25 m，菜地面积为 192 m²。求菜地垂直于墙的一边长。",
+    "answer": "8 m 或 12 m",
+    "solution": "设垂直于墙的一边长为 x m，则平行于墙的一边长为 (40-2x) m。\n依题意：x(40-2x)=192。\n整理得 x²-20x+96=0，\n解得 x=8 或 x=12。\n当 x=8 时，另一边为 24 m，不超过墙长 25 m，符合；\n当 x=12 时，另一边为 16 m，符合。\n答：垂直于墙的一边长为 8 m 或 12 m。"
+  },
+  {
+    "id": "sh_233_1",
+    "topicId": "cnm_233",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "已知抛物线经过点 A(0,3)、B(1,0)、C(3,0)，求这条抛物线的解析式。",
+    "answer": "y=x²-4x+3",
+    "solution": "因为抛物线与 x 轴交于 B(1,0)、C(3,0)，\n可设 y=a(x-1)(x-3)。\n把 A(0,3) 代入：3=a·(0-1)·(0-3)=3a，\n解得 a=1。\n所以 y=(x-1)(x-3)=x²-4x+3。"
+  },
+  {
+    "id": "sh_233_2",
+    "topicId": "cnm_233",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "已知抛物线的顶点为 (1,-4)，且经过点 (0,-3)，求它的解析式。",
+    "answer": "y=x²-2x-3",
+    "solution": "设 y=a(x-1)²-4。\n把 (0,-3) 代入：-3=a(0-1)²-4=a-4，\n解得 a=1。\n所以 y=(x-1)²-4=x²-2x-3。"
+  },
+  {
+    "id": "sh_235_1",
+    "topicId": "cnm_235",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "求二次函数 y=-2x²+8x-3 的最大值，并指出取得最大值时 x 的值。",
+    "answer": "x=2 时，最大值 5",
+    "solution": "配方：y=-2(x²-4x)-3=-2(x-2)²+8-3=-2(x-2)²+5。\n因为 a=-2<0，抛物线开口向下，\n所以当 x=2 时，y 取得最大值 5。"
+  },
+  {
+    "id": "sh_235_2",
+    "topicId": "cnm_235",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 220,
+    "prompt": "求二次函数 y=x²-4x+7 在 0≤x≤3 上的最大值和最小值。",
+    "answer": "最小值 3（x=2），最大值 7（x=0）",
+    "solution": "配方：y=(x-2)²+3，对称轴为 x=2，开口向上。\n因为 2 在区间 [0,3] 内，所以最小值在顶点取得：\n当 x=2 时，y=3。\n再比较两个端点：x=0 时 y=7；x=3 时 y=4。\n所以最大值在 x=0 处取得，为 7。\n答：最小值 3（x=2），最大值 7（x=0）。"
+  },
+  {
+    "id": "sh_236_1",
+    "topicId": "cnm_236",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 220,
+    "prompt": "用 60 m 长的篱笆围成一个矩形菜地，求这块菜地的最大面积。",
+    "answer": "225 m²",
+    "solution": "设矩形的一边长为 x m，则邻边长为 (30-x) m。\n面积 S=x(30-x)=-x²+30x=-(x-15)²+225。\n因为 a=-1<0，所以当 x=15 时，S 取得最大值 225。\n答：这块菜地的最大面积是 225 m²（此时为边长 15 m 的正方形）。"
+  },
+  {
+    "id": "sh_236_2",
+    "topicId": "cnm_236",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "某抛物线形拱桥，跨度（水面宽度）为 8 m，拱顶高出水面 4 m。以拱顶为原点、对称轴为 y 轴建立坐标系，求水面下降 1 m 后水面的宽度。",
+    "answer": "4√5 m（约 8.9 m）",
+    "solution": "设抛物线为 y=ax²+4（拱顶在原点上方，开口向下，顶点为 (0,4)）。\n水面在原处时 y=0，代入得 0=16a+4，a=-1/4，\n所以 y=-x²/4+4。\n水面下降 1 m 后，新水面为 y=-1。\n由 -1=-x²/4+4 得 x²=20，x=±2√5。\n所以宽度为 4√5 m，约为 8.9 m。"
+  },
+  {
+    "id": "sh_232_1",
+    "topicId": "cnm_232",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "已知二次函数 y=x²-2x-3。求它的顶点坐标、对称轴，以及与 x 轴、y 轴的交点坐标。",
+    "answer": "顶点 (1,-4)，对称轴 x=1，与 x 轴交于 (-1,0)、(3,0)，与 y 轴交于 (0,-3)",
+    "solution": "配方：y=(x-1)²-4，\n所以顶点为 (1,-4)，对称轴为直线 x=1。\n令 y=0：x²-2x-3=0，(x-3)(x+1)=0，x=3 或 x=-1，\n与 x 轴交于 (-1,0)、(3,0)。\n令 x=0：y=-3，与 y 轴交于 (0,-3)。"
+  },
+  {
+    "id": "sh_234_1",
+    "topicId": "cnm_234",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "已知抛物线 y=x²-2x+m 与 x 轴的交点个数随 m 变化。求它与 x 轴有两个交点、只有一个交点时 m 的值或取值范围。",
+    "answer": "两个交点时 m<1；只有一个交点时 m=1",
+    "solution": "令 y=0，得 x²-2x+m=0，Δ=(-2)²-4m=4-4m。\n有两个交点，则 Δ>0，即 4-4m>0，m<1。\n只有一个交点，则 Δ=0，即 4-4m=0，m=1。"
+  },
+  {
+    "id": "sh_241_1",
+    "topicId": "cnm_241",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 220,
+    "prompt": "一次函数 y=x+2 与反比例函数 y=k/x 的图象交于点 A(1,m) 和点 B(n,-1)。求 k 的值和点 B 的坐标。",
+    "answer": "k=3，B(-3,-1)",
+    "solution": "点 A(1,m) 在直线 y=x+2 上，所以 m=1+2=3，即 A(1,3)。\n点 A 在 y=k/x 上，所以 k=1×3=3。\n点 B(n,-1) 在直线 y=x+2 上，所以 -1=n+2，n=-3。\n所以 B(-3,-1)。\n（检验：-3×(-1)=3=k，符合。）"
+  },
+  {
+    "id": "sh_241_2",
+    "topicId": "cnm_241",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "已知一次函数 y=x+2 与反比例函数 y=3/x 的图象交于 A(1,3)、B(-3,-1)。直接写出不等式 3/x > x+2 的解集。",
+    "answer": "x<-3 或 0<x<1",
+    "solution": "3/x > x+2 等价于 3/x-(x+2)>0，即 (3-x²-2x)/x>0。\n分子 3-x²-2x=-(x+3)(x-1)。\n①当 x>0 时，需要 -(x+3)(x-1)>0，即 (x+3)(x-1)<0，得 -3<x<1，结合 x>0 得 0<x<1。\n②当 x<0 时，需要 -(x+3)(x-1)<0，即 (x+3)(x-1)>0，得 x<-3 或 x>1，结合 x<0 得 x<-3。\n所以解集为 x<-3 或 0<x<1。"
+  },
+  {
+    "id": "sh_242_1",
+    "topicId": "cnm_242",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "汽车从甲地驶往乙地，全程 300 km。设行驶速度为 v（km/h），所需时间为 t（h）。写出 t 关于 v 的函数解析式；若要求 4 h 内到达，速度至少为多少？",
+    "answer": "t=300/v；v≥75 km/h",
+    "solution": "由 路程=速度×时间 得 vt=300，\n所以 t=300/v（v>0）。\n要求 t≤4，即 300/v≤4。\n因为 v>0，两边同乘 v 得 300≤4v，v≥75。\n答：t=300/v；速度至少 75 km/h。"
+  },
+  {
+    "id": "sh_239_1",
+    "topicId": "cnm_239",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "点 P 在反比例函数 y=k/x 的图象上，过 P 作 PA⊥x 轴于点 A。若 △POA 的面积为 3，且图象位于第二、四象限，求 k 的值。",
+    "answer": "k=-6",
+    "solution": "设 P(x,y)，则 xy=k。\nS△POA=½·|OA|·|PA|=½|x|·|y|=½|k|。\n由 ½|k|=3 得 |k|=6。\n因为图象在第二、四象限，所以 k<0，\n所以 k=-6。"
+  },
+  {
+    "id": "sh_245_1",
+    "topicId": "cnm_245",
+    "difficulty": "basic",
+    "points": 6,
+    "space": 150,
+    "prompt": "把 △ABC 绕点 A 顺时针旋转 50° 得到 △AB′C′。若 ∠BAC=30°，求 ∠B′AC 的度数。",
+    "answer": "20°",
+    "solution": "由旋转的性质，旋转角 ∠BAB′=50°。\n因为 ∠BAC=30°，且 AC 在 ∠BAB′ 的内部，\n所以 ∠B′AC=∠BAB′-∠BAC=50°-30°=20°。"
+  },
+  {
+    "id": "sh_247_1",
+    "topicId": "cnm_247",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 260,
+    "prompt": "正方形 ABCD 中，点 E 在边 BC 上，点 F 在边 CD 上，且 ∠EAF=45°。求证：EF=BE+DF。",
+    "answer": "证明见解析（把 △ABE 绕点 A 旋转 90°）",
+    "solution": "把 △ABE 绕点 A 逆时针旋转 90°，使 AB 与 AD 重合，点 E 落到点 G 处。\n由旋转的性质：AG=AE，DG=BE，∠DAG=∠BAE。\n因为 ∠BAD=90°，∠EAF=45°，\n所以 ∠BAE+∠DAF=90°-45°=45°，\n从而 ∠GAF=∠DAG+∠DAF=∠BAE+∠DAF=45°。\n在 △AEF 和 △AGF 中：\nAE=AG，∠EAF=∠GAF=45°，AF=AF，\n所以 △AEF≌△AGF（SAS），得 EF=GF。\n又 G、D、F 三点共线（G 在 CD 的延长线上），\nGF=GD+DF=BE+DF。\n所以 EF=BE+DF。"
+  },
+  {
+    "id": "sh_251_1",
+    "topicId": "cnm_251",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "⊙O 的半径为 10，弦 AB 的长为 16，求圆心 O 到弦 AB 的距离。",
+    "answer": "6",
+    "solution": "过 O 作 OC⊥AB 于 C，由垂径定理得 AC=½AB=8。\n在 Rt△OAC 中，OA=10，AC=8，\nOC=√(10²-8²)=√36=6。\n所以圆心到弦 AB 的距离为 6。"
+  },
+  {
+    "id": "sh_251_2",
+    "topicId": "cnm_251",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 220,
+    "prompt": "⊙O 的半径为 5，圆内有两条互相平行的弦，长分别为 6 和 8。求这两条平行弦之间的距离。",
+    "answer": "1 或 7",
+    "solution": "半径 5，弦长 6 时，弦心距为 √(5²-3²)=4；\n弦长 8 时，弦心距为 √(5²-4²)=3。\n①两弦在圆心同侧时，距离为 4-3=1；\n②两弦在圆心异侧时，距离为 4+3=7。\n所以两弦之间的距离为 1 或 7。"
+  },
+  {
+    "id": "sh_253_1",
+    "topicId": "cnm_253",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 170,
+    "prompt": "⊙O 中，圆心角 ∠AOB=100°，点 C 在优弧 AB 上。求圆周角 ∠ACB 的度数。",
+    "answer": "50°",
+    "solution": "∠AOB 与 ∠ACB 是同弧 AB 所对的圆心角和圆周角，\n由圆周角定理：∠ACB=½∠AOB=½×100°=50°。"
+  },
+  {
+    "id": "sh_255_1",
+    "topicId": "cnm_255",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "四边形 ABCD 内接于 ⊙O，且 ∠A∶∠B∶∠C=2∶3∶4。求 ∠D 的度数。",
+    "answer": "90°",
+    "solution": "设 ∠A=2k，∠B=3k，∠C=4k。\n圆内接四边形对角互补，所以 ∠A+∠C=180°，\n即 2k+4k=180°，k=30°。\n所以 ∠B=3k=90°。\n又 ∠B+∠D=180°，所以 ∠D=180°-90°=90°。"
+  },
+  {
+    "id": "sh_257_1",
+    "topicId": "cnm_257",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "半径为 6 的圆中，圆心角为 120° 的扇形的面积是多少？该扇形的弧长是多少？",
+    "answer": "面积 12π，弧长 4π",
+    "solution": "扇形面积 S=(120/360)·π·6²=⅓·36π=12π。\n弧长 l=(120/180)·π·6=4π。"
+  },
+  {
+    "id": "sh_258_1",
+    "topicId": "cnm_258",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "圆锥的底面半径为 3，母线长为 5。求它的侧面积和全面积。",
+    "answer": "侧面积 15π，全面积 24π",
+    "solution": "侧面积 S侧=πrl=π×3×5=15π。\n底面积 S底=πr²=9π。\n全面积 S全=S侧+S底=15π+9π=24π。"
+  },
+  {
+    "id": "sh_261_1",
+    "topicId": "cnm_261",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 260,
+    "prompt": "AB 是 ⊙O 的直径，点 C 在 ⊙O 上，∠BAC 的平分线交 ⊙O 于点 D，过点 D 作 DE⊥AC，交 AC 的延长线于点 E。求证：DE 是 ⊙O 的切线。",
+    "answer": "证明见解析（连 OD，证 OD∥AE）",
+    "solution": "连接 OD。\n因为 OA=OD，所以 ∠OAD=∠ODA。\n因为 AD 平分 ∠BAC，所以 ∠OAD=∠DAE。\n所以 ∠ODA=∠DAE，从而 OD∥AE。\n因为 DE⊥AE，所以 OD⊥DE。\n又 OD 是 ⊙O 的半径，且 D 在 ⊙O 上，\n所以 DE 是 ⊙O 的切线。"
+  },
+  {
+    "id": "sh_262_1",
+    "topicId": "cnm_262",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 170,
+    "prompt": "PA 切 ⊙O 于点 A，∠P=30°，⊙O 的半径为 3。求 OP 的长。",
+    "answer": "6",
+    "solution": "因为 PA 切 ⊙O 于 A，所以 OA⊥PA，∠OAP=90°。\n在 Rt△OAP 中，∠P=30°，OA=3，\nOP=OA/sin30°=3÷½=6。"
+  },
+  {
+    "id": "sh_263_1",
+    "topicId": "cnm_263",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "PA、PB 分别切 ⊙O 于 A、B，∠APB=60°，PA=4。求弦 AB 的长。",
+    "answer": "4",
+    "solution": "由切线长定理：PB=PA=4。\n又 ∠APB=60°，\n所以 △PAB 是有一个角为 60° 的等腰三角形，即等边三角形。\n所以 AB=PA=4。"
+  },
+  {
+    "id": "sh_264_1",
+    "topicId": "cnm_264",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "直角三角形的两条直角边长分别为 3 和 4，求它的内切圆半径。",
+    "answer": "1",
+    "solution": "由勾股定理，斜边 c=√(3²+4²)=5。\n直角三角形内切圆半径 r=(a+b-c)/2=(3+4-5)/2=1。\n（也可用面积法：S=½×3×4=6，r=S/p=6÷6=1，其中 p 为半周长 6。）"
+  },
+  {
+    "id": "sh_265_1",
+    "topicId": "cnm_265",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 170,
+    "prompt": "直角三角形的两条直角边长分别为 6 和 8，求它的外接圆半径。",
+    "answer": "5",
+    "solution": "由勾股定理，斜边 c=√(6²+8²)=10。\n直角三角形的外心是斜边的中点，\n所以外接圆半径 R=c/2=5。"
+  },
+  {
+    "id": "sh_266_1",
+    "topicId": "cnm_266",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "正六边形的边长为 2。求它的外接圆半径、边心距和面积。",
+    "answer": "半径 2，边心距 √3，面积 6√3",
+    "solution": "正六边形的外接圆半径等于边长，所以 R=2。\n边心距 d=√(R²-(a/2)²)=√(4-1)=√3。\n面积 S=6×½×2×√3=6√3。"
+  },
+  {
+    "id": "sh_271_1",
+    "topicId": "cnm_271",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "在 △ABC 中，点 D 在边 AB 上，且 ∠ACD=∠B。求证：△ACD∽△ABC，并证明 AC²=AD·AB。",
+    "answer": "证明见解析",
+    "solution": "在 △ACD 和 △ABC 中：\n∠A=∠A（公共角），\n∠ACD=∠B（已知），\n所以 △ACD∽△ABC。\n由相似三角形对应边成比例：AC/AB=AD/AC。\n所以 AC²=AD·AB。"
+  },
+  {
+    "id": "sh_272_1",
+    "topicId": "cnm_272",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "已知 △ABC∽△DEF，相似比为 2∶3。若 △ABC 的周长为 12、面积为 8，求 △DEF 的周长和面积。",
+    "answer": "周长 18，面积 18",
+    "solution": "相似三角形周长比等于相似比，\n所以 C△DEF=12×(3/2)=18。\n相似三角形面积比等于相似比的平方，即 4∶9，\n所以 S△DEF=8×(9/4)=18。"
+  },
+  {
+    "id": "sh_274_1",
+    "topicId": "cnm_274",
+    "difficulty": "basic",
+    "points": 6,
+    "space": 160,
+    "prompt": "同一时刻，身高 1.6 m 的小明在阳光下的影长为 2 m，同一地点旗杆的影长为 15 m。求旗杆的高度。",
+    "answer": "12 m",
+    "solution": "同一时刻、同一地点，物高与影长成正比。\n设旗杆高为 h m，则\nh/15=1.6/2，\n解得 h=15×0.8=12。\n答：旗杆高 12 m。"
+  },
+  {
+    "id": "sh_277_1",
+    "topicId": "cnm_277",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 180,
+    "prompt": "计算：2cos45°+tan60°·sin60°-2sin30°",
+    "answer": "√2+1/2",
+    "solution": "2cos45°=2×(√2/2)=√2；\ntan60°·sin60°=√3×(√3/2)=3/2；\n2sin30°=2×½=1。\n原式=√2+3/2-1=√2+1/2。"
+  },
+  {
+    "id": "sh_278_1",
+    "topicId": "cnm_278",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "在 Rt△ABC 中，∠C=90°，∠A=30°，斜边 c=8。求 a、b 的长。",
+    "answer": "a=4，b=4√3",
+    "solution": "在 Rt△ABC 中，\na=c·sinA=8×sin30°=8×½=4；\nb=c·cosA=8×cos30°=8×(√3/2)=4√3。\n（也可用 30° 角所对直角边等于斜边一半，再用勾股定理求 b。）"
+  },
+  {
+    "id": "sh_279_1",
+    "topicId": "cnm_279",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "在点 A 处测得某楼顶的仰角为 30°，向楼的方向前进 20 m 到达点 B，测得楼顶的仰角为 60°。A、B 与楼底在同一条直线上，求楼高。",
+    "answer": "10√3 m（约 17.3 m）",
+    "solution": "设楼高为 h m，B 到楼底的距离为 d m。\n在 Rt△ 中：h/d=tan60°=√3，所以 d=h/√3。\n又 h/(d+20)=tan30°=√3/3。\n代入 d=h/√3：h/(h/√3+20)=√3/3。\n整理得 3h=(√3)(h/√3+20)=h+20√3，\n所以 2h=20√3，h=10√3。\n答：楼高为 10√3 m，约 17.3 m。"
+  },
+  {
+    "id": "sh_280_1",
+    "topicId": "cnm_280",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 200,
+    "prompt": "某斜坡的坡比为 1∶2，坡面长为 20 m。求这个斜坡的铅直高度。",
+    "answer": "4√5 m（约 8.9 m）",
+    "solution": "设铅直高度为 h m，则水平宽度为 2h m。\n由勾股定理：h²+(2h)²=20²，\n即 5h²=400，h²=80，h=4√5。\n答：铅直高度为 4√5 m，约 8.9 m。"
+  },
+  {
+    "id": "sh_286_1",
+    "topicId": "cnm_286",
+    "difficulty": "basic",
+    "points": 6,
+    "space": 160,
+    "prompt": "同时抛掷两枚质地均匀的硬币，求「一枚正面朝上、一枚反面朝上」的概率。",
+    "answer": "1/2",
+    "solution": "所有等可能的结果有 4 种：（正,正）、（正,反）、（反,正）、（反,反）。\n一枚正面一枚反面的结果有 2 种：（正,反）、（反,正）。\n所以概率 P=2/4=1/2。"
+  },
+  {
+    "id": "sh_287_1",
+    "topicId": "cnm_287",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 220,
+    "prompt": "从 1、2、3 三个数字中随机抽取两个不同的数字，按抽取顺序组成一个两位数。求这个两位数是偶数的概率。",
+    "answer": "1/3",
+    "solution": "用列表法，所有等可能的两位数有：\n12、13、21、23、31、32，共 6 个。\n其中偶数（个位是 2）的有：12、32，共 2 个。\n所以概率 P=2/6=1/3。"
+  },
+  {
+    "id": "sh_289_1",
+    "topicId": "cnm_289",
+    "difficulty": "advanced",
+    "points": 10,
+    "space": 240,
+    "prompt": "一个转盘被分成三个相同的扇形，分别标有 1、2、3。甲转动两次，若两次数字之和为偶数则甲胜，否则乙胜。这个游戏公平吗？请说明理由。",
+    "answer": "不公平，甲胜的概率是 5/9，对甲有利",
+    "solution": "用列表法列出所有等可能的结果（共 9 种）：\n(1,1)=2、(1,2)=3、(1,3)=4、\n(2,1)=3、(2,2)=4、(2,3)=5、\n(3,1)=4、(3,2)=5、(3,3)=6。\n和为偶数的有 (1,1)、(1,3)、(2,2)、(3,1)、(3,3)，共 5 种，\nP(甲胜)=5/9，P(乙胜)=4/9。\n因为 5/9≠4/9，所以这个游戏不公平，对甲有利。"
+  },
+  {
+    "id": "sh_311_1",
+    "topicId": "cnm_311",
+    "difficulty": "standard",
+    "points": 8,
+    "space": 220,
+    "prompt": "袋中装有 2 个红球和 1 个白球，除颜色外完全相同。每次摸出一个球记下颜色后放回，连摸三次。求三次都摸到红球的概率。",
+    "answer": "8/27",
+    "solution": "每次摸到红球的概率为 2/3，\n三次摸球相互独立，\n所以 P=(2/3)³=8/27。\n（用树状图也可：共有 27 种等可能结果，三次全红有 8 种。）"
+  },
+  {
+    "id": "sh_249_1",
+    "topicId": "cnm_249",
+    "difficulty": "basic",
+    "points": 6,
+    "space": 150,
+    "prompt": "已知点 P(2a-1,3) 与点 Q(5,b+2) 关于原点对称，求 a、b 的值。",
+    "answer": "a=-2，b=-5",
+    "solution": "关于原点对称的两点，横坐标、纵坐标都互为相反数。\n所以 2a-1=-5，解得 a=-2；\n3=-(b+2)，即 b+2=-3，解得 b=-5。"
+  },
+  {
+    "id": "sh_232_2",
+    "topicId": "cnm_232",
+    "difficulty": "advanced",
+    "points": 12,
+    "space": 300,
+    "prompt": "抛物线 y=x²-2x-3 与 x 轴交于点 A(-1,0)、B(3,0)，与 y 轴交于点 C。点 P 在抛物线上，且 △PBC 的面积为 6，求点 P 的坐标。",
+    "answer": "P(4,5) 或 P(-1,0)",
+    "solution": "由 B(3,0)、C(0,-3) 得直线 BC：y=x-3。\n设 P(t,t²-2t-3)。\n点 P 到直线 x-y-3=0 的距离\nd=|t-(t²-2t-3)-3|/√2=|3t-t²|/√2。\n又 |BC|=√(3²+3²)=3√2。\nS△PBC=½×3√2×|3t-t²|/√2=(3/2)|3t-t²|=6，\n所以 |3t-t²|=4，即 t²-3t=±4。\n①t²-3t-4=0，解得 t=4 或 t=-1；\n②t²-3t+4=0，Δ=9-16<0，无实数解。\n当 t=4 时，y=16-8-3=5，P(4,5)；\n当 t=-1 时，y=1+2-3=0，P(-1,0)。\n所以 P(4,5) 或 P(-1,0)。"
+  }
+]

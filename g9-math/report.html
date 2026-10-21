@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>盲点报告 · 初三数学盲点诊断</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>盲点报告</h1>
+  <p class="sub" id="subLine"></p>
+
+  <div id="out"></div>
+</div>
+
+<script src="data/bundle.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var S = Store, E = Engine, U = UI;
+  U.mountNav('report.html');
+
+  var testId = U.qs('test');
+  var test = testId ? S.getTest(testId) : (S.state.tests.filter(function (t) { return t.done; })[0]);
+
+  if (!test) {
+    U.el('out').innerHTML = '<div class="card"><div class="empty">' +
+      '<div class="big">还没有批改过的测试</div>' +
+      '先<a href="paper.html">出一张卷</a>，做完<a href="grade.html">批改</a>后回来看报告。</div></div>';
+    return;
+  }
+  if (!test.done) {
+    U.el('out').innerHTML = '<div class="note blue">这张卷还没批改，先去<a href="grade.html?test=' +
+      test.id + '">批改</a>。</div>';
+    return;
+  }
+
+  var r = E.diagnose(test, S.state);
+  var s = r.summary;
+
+  U.el('subLine').textContent = U.fmtDate(test.gradedAt || test.at) + ' · ' +
+    (test.scopeLabel || '') + ' · ' + test.items.length + ' 题';
+
+  var h = '';
+
+  /* ---- 1. 概览 ---- */
+  h += '<div class="metrics">' +
+    metric('正确率', s.accuracy, '%') +
+    metric('做对', s.right, '题') +
+    metric('做错', s.wrong, '题') +
+    metric('薄弱知识点', s.weakTopics, '个') +
+    metric('疑似根因', s.rootCandidates, '个') +
+    '</div>';
+
+  if (s.wrong === 0) {
+    h += '<div class="card" style="margin-top:14px"><div class="empty">' +
+      '<div class="big">这张卷全对</div>' +
+      '<p class="small">没有暴露新的盲点。可以换个范围、加大难度，或者直接进入下一张卷。</p>' +
+      '<a class="btn btn-blue" href="paper.html">出下一张卷</a></div></div>';
+    U.el('out').innerHTML = h;
+    return;
+  }
+
+  /* ---- 2. 章节表现 ---- */
+  h += '<h2>章节表现</h2><div class="card">';
+  r.chapters.forEach(function (c) {
+    var cls = c.rate >= 85 ? '' : (c.rate >= 60 ? 'warn' : 'bad');
+    h += '<div style="margin-bottom:12px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:4px">' +
+      '<span>' + U.esc(c.short) + '</span>' +
+      '<span class="muted">' + (c.total - c.wrong) + '/' + c.total + '　' + c.rate + '%</span></div>' +
+      '<div class="bar ' + cls + '"><i style="width:' + c.rate + '%"></i></div></div>';
+  });
+  h += '</div>';
+
+  /* ---- 3. 直接薄弱点 ---- */
+  h += '<h2>直接薄弱点</h2><div class="card"><ul class="list">';
+  r.direct.forEach(function (d) {
+    h += '<li><div class="li-head">' +
+      '<span class="li-title">' + U.esc(d.name) + '</span>' +
+      '<span class="chip blue">' + d.gradeLabel + '</span>' +
+      '<span class="chip">' + U.esc(d.chapterShort) + '</span>' +
+      (d.count > 1 ? '<span class="chip red">错了 ' + d.count + ' 道</span>' : '') +
+      '</div><div class="li-sub">' + U.esc(d.domain) + '</div></li>';
+  });
+  h += '</ul></div>';
+
+  /* ---- 4. 根因链（核心） ---- */
+  h += '<h2>根因追溯</h2>';
+  h += '<div class="note blue">这一部分是<b>推断</b>，不是结论。孩子在这一章做错，很可能是更早的知识点没打牢。' +
+    '下面标红的那一环最可疑，下一张卷会自动考它来验证。</div>';
+
+  r.chains.forEach(function (c) {
+    var rootId = c.rootId;
+    h += '<div class="card">';
+    h += '<div class="li-head" style="margin-bottom:2px">' +
+      '<span class="li-title">' + U.esc(c.name) + '</span>' +
+      '<span class="badge ' + c.confidence + '">根因置信度 ' + c.confidence + '</span>' +
+      '</div>';
+    h += '<div class="small muted" style="margin-bottom:6px">从最早的前置知识一路到这里：</div>';
+    h += '<div class="chain">' + c.path.map(function (n, i) {
+      var cls = n.id === rootId ? 'suspect' : (n.isCore ? 'core' : 'prim');
+      return (i ? '<span class="arrow">→</span>' : '') +
+        '<span class="node ' + cls + '">' + U.esc(n.name) +
+        '<i class="g">' + n.gradeLabel + '</i></span>';
+    }).join('') + '</div>';
+    h += '</div>';
+  });
+
+  /* ---- 5. 根因候选排序 ---- */
+  h += '<h2>疑似根因排序</h2><div class="card"><ul class="list">';
+  r.roots.slice(0, 8).forEach(function (x) {
+    h += '<li><div class="li-head">' +
+      '<span class="li-title">' + U.esc(x.name) + '</span>' +
+      '<span class="chip ' + (x.isCore ? 'blue' : 'amber') + '">' + x.gradeLabel + '</span>' +
+      '<span class="badge ' + x.confidence + '">' + x.confidence + '</span>' +
+      (x.downstream ? '<span class="chip red">影响 ' + x.downstream + ' 个后续知识点</span>' : '') +
+      '</div><div class="li-sub">' + U.esc(x.chapterShort) +
+      ' · 关联 ' + x.support.length + ' 个错题知识点</div></li>';
+  });
+  h += '</ul></div>';
+
+  /* ---- 6. 下一步 ---- */
+  var teachIds = r.roots.slice(0, 6).map(function (x) { return x.topicId; });
+  /* 先把直接薄弱点放前面 */
+  r.direct.forEach(function (d) {
+    if (teachIds.indexOf(d.topicId) === -1) teachIds.unshift(d.topicId);
+  });
+  teachIds = teachIds.slice(0, 8);
+
+  h += '<h2>下一步</h2><div class="card">' +
+    '<p><b>先讲后练。</b>把讲解卡打印出来，和孩子一起过一遍最可疑的那两三个点，' +
+    '然后做一张根因验证卷——如果那些点还是错，说明判断对了；如果对了，说明问题就在初三本身。</p>' +
+    '<div class="btn-row">' +
+    '<a class="btn btn-primary" href="teach.html?topics=' + teachIds.join(',') + '&test=' + test.id + '">打印讲解卡（' + teachIds.length + ' 个点）</a>' +
+    '<a class="btn" href="paper.html?mode=probe">出根因验证卷</a>' +
+    '<a class="btn" href="paper.html">出常规卷</a>' +
+    '</div></div>';
+
+  U.el('out').innerHTML = h;
+
+  function metric(k, v, unit) {
+    return '<div class="metric"><div class="k">' + k + '</div><div class="v">' +
+      v + (unit ? '<small> ' + unit + '</small>' : '') + '</div></div>';
+  }
+})();
+</script>
+</body>
+</html>

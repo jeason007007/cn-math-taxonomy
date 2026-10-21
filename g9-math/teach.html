@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>讲解 · 初三数学盲点诊断</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>盲点讲解</h1>
+  <p class="sub" id="subLine">每个知识点一张卡，A4 打印，一页一个，可以剪下来贴错题本。</p>
+
+  <div id="picker" class="no-print"></div>
+  <div id="out"></div>
+</div>
+
+<script src="data/bundle.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var S = Store, E = Engine, U = UI;
+  U.mountNav('teach.html');
+
+  var topicsParam = U.qs('topics');
+  var testId = U.qs('test');
+  var test = testId ? S.getTest(testId) : null;
+
+  if (!topicsParam) {
+    renderPicker();
+  } else {
+    var ids = topicsParam.split(',').filter(Boolean);
+    renderLessons(ids, test);
+  }
+
+  /* ---- 选择页 ---- */
+  function renderPicker() {
+    var blind = S.blindSpots();
+    if (!blind.length) {
+      U.el('picker').innerHTML = '<div class="card"><div class="empty">' +
+        '<div class="big">还没有盲点</div>' +
+        '做完一张卷并批改后，这里会自动列出需要讲的知识点。</div></div>';
+      return;
+    }
+    var html = '<div class="card"><div class="li-head" style="margin-bottom:10px">' +
+      '<b>选择要讲的知识点</b>' +
+      '<span class="chip">' + blind.length + ' 个盲点</span>' +
+      '</div><div id="pickList" style="display:flex;flex-direction:column;gap:8px">' +
+      blind.map(function (b) {
+        return '<label class="opt" style="display:flex;align-items:center;gap:10px;padding:9px 13px">' +
+          '<input type="checkbox" value="' + U.esc(b.topicId) + '" style="width:auto;margin:0">' +
+          '<span style="flex:1"><b>' + U.esc(b.name) + '</b> ' +
+          '<span class="muted small">' + b.gradeLabel + ' · ' + U.esc(b.chapterShort) + '</span></span>' +
+          '<span class="chip red">错 ' + b.wrong + '</span>' +
+          '</label>';
+      }).join('') + '</div>' +
+      '<div class="btn-row" style="margin-top:16px">' +
+      '<button class="btn btn-primary" id="btnGo">生成讲解卡</button>' +
+      '<button class="btn" id="btnAll">全选</button>' +
+      '<span class="small muted" id="pickCount"></span></div></div>';
+    U.el('picker').innerHTML = html;
+
+    var boxes = function () { return Array.prototype.slice.call(document.querySelectorAll('#pickList input')); };
+    function upd() {
+      var n = boxes().filter(function (b) { return b.checked; }).length;
+      U.el('pickCount').textContent = n ? '已选 ' + n + ' 个' : '';
+    }
+    document.getElementById('pickList').addEventListener('change', upd);
+    U.el('btnAll').onclick = function () { boxes().forEach(function (b) { b.checked = true; }); upd(); };
+    U.el('btnGo').onclick = function () {
+      var ids = boxes().filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      if (!ids.length) { U.toast('先选至少一个知识点'); return; }
+      location.href = 'teach.html?topics=' + ids.join(',');
+    };
+  }
+
+  /* ---- 讲解卡 ---- */
+  function renderLessons(ids, test) {
+    var lessons = E.buildLessons(ids, test);
+    if (!lessons.length) {
+      U.el('out').innerHTML = '<div class="card"><div class="empty">没找到对应的知识点</div></div>';
+      return;
+    }
+
+    U.el('subLine').textContent = lessons.length + ' 个知识点 · ' +
+      'A4 打印，一页一个，可以剪下来贴错题本。';
+
+    U.el('picker').innerHTML = '<div class="btn-row no-print" style="margin-bottom:14px">' +
+      '<button class="btn btn-primary" id="btnPrint">打印讲解卡</button>' +
+      '<a class="btn" href="teach.html">换几个知识点</a>' +
+      '<a class="btn" href="paper.html?mode=probe">讲完出新卷</a></div>';
+    document.getElementById('btnPrint').onclick = function () { window.print(); };
+
+    U.el('out').innerHTML = lessons.map(function (L, i) {
+      return '<div class="card lesson-card">' + lessonHTML(L, i + 1) + '</div>';
+    }).join('');
+  }
+
+  function lessonHTML(L, idx) {
+    var h = '';
+    h += '<div class="lesson-head">' +
+      '<h3>' + idx + '. ' + U.esc(L.name) + '</h3>' +
+      '<span class="chip blue">' + L.gradeLabel + (L.semesterLabel ? ' · ' + L.semesterLabel : '') + '</span>' +
+      '<span class="chip">' + U.esc(L.chapterShort) + '</span>' +
+      '<span class="chip">' + U.esc(L.domain) + '</span>' +
+      '</div>';
+
+    /* 是什么 */
+    if (L.description) {
+      h += '<div class="kv"><div class="k">这个知识点讲什么</div>' +
+        '<div class="v">' + U.esc(L.description) + '</div></div>';
+    }
+
+    /* 掌握标准 */
+    if (L.mastery.length) {
+      h += '<div class="kv"><div class="k">要达到什么程度（对照检查，能打勾才算会）</div>' +
+        '<ul class="plain">' + L.mastery.map(function (m) {
+          return '<li>' + U.esc(m) + '</li>';
+        }).join('') + '</ul></div>';
+    }
+
+    /* 先修链 */
+    if (L.chain.length > 1) {
+      h += '<div class="kv"><div class="k">它建立在什么之上（哪一环松了，这里就会塌）</div>' +
+        '<div class="chain">' + L.chain.map(function (n, i) {
+          var cls = n.isCore ? 'core' : 'prim';
+          return (i ? '<span class="arrow">→</span>' : '') +
+            '<span class="node ' + cls + '">' + U.esc(n.name) +
+            '<i class="g">' + n.gradeLabel + '</i></span>';
+        }).join('') + '</div></div>';
+    }
+
+    /* 本次错题回顾 */
+    if (L.wrongItems.length) {
+      h += '<div class="kv"><div class="k">这次做错的题</div>';
+      L.wrongItems.forEach(function (w) {
+        h += '<div class="wrong-review">' +
+          '<p class="wr-q"><b>第 ' + w.no + ' 题　</b>' + U.esc(w.question.prompt) + '</p>' +
+          (w.question.choices ? '<div class="wr-q small">' + U.choicesHTML(w.question) + '</div>' : '') +
+          '<p class="wr-a"><b>正确答案：</b>' + U.esc(w.question.answer) + '</p>' +
+          '<p class="wr-a pre"><b>怎么想：</b>' + U.esc(w.question.solution || w.question.explanation) + '</p>' +
+          '</div>';
+      });
+      h += '</div>';
+    }
+
+    /* 教材例题 */
+    if (L.diagnostic && L.diagnostic.question) {
+      h += '<div class="kv"><div class="k">典型例题</div>' +
+        '<div class="example">' +
+        '<p style="margin:0 0 6px"><b>题目：</b>' + U.esc(L.diagnostic.question) + '</p>' +
+        '<p style="margin:0;color:var(--teal)"><b>答案：</b>' + U.esc(L.diagnostic.answer) + '</p>' +
+        '</div></div>';
+    }
+
+    /* 同类练习 */
+    if (L.practice.length) {
+      h += '<div class="kv"><div class="k">同类练习（讲完当场做，不看答案）</div>';
+      L.practice.forEach(function (q, i) {
+        h += '<div class="example" style="margin-bottom:8px">' +
+          '<p style="margin:0 0 5px"><b>' + (i + 1) + '）</b>' + U.esc(q.prompt) + '</p>' +
+          (q.choices ? '<div style="margin:0 0 5px">' + U.choicesHTML(q) + '</div>' : '') +
+          '<p class="small muted" style="margin:0">答案：' + U.esc(q.answer) + '</p>' +
+          (q.solution
+            ? '<p class="small muted pre" style="margin:4px 0 0">' + U.esc(q.solution) + '</p>'
+            : '<p class="small muted" style="margin:0">（' + U.esc(q.explanation) + '）</p>') +
+          '</div>';
+      });
+      h += '</div>';
+    }
+
+    /* 影响面 */
+    if (L.downstream) {
+      h += '<p class="small muted" style="margin:12px 0 0">' +
+        '这个点不补，会连带影响后面 <b>' + L.downstream + '</b> 个知识点。</p>';
+    }
+
+    return h;
+  }
+})();
+</script>
+</body>
+</html>

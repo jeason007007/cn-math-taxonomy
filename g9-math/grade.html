@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>批改 · 初三数学盲点诊断</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>批改</h1>
+  <p class="sub">默认全部算对，只把做错的题点成「×」。答案和解析就在题下面，照着判就行。</p>
+
+  <div id="out"></div>
+
+  <div class="btn-row no-print" id="submitRow" style="display:none;margin-top:18px">
+    <button class="btn btn-primary btn-lg" id="btnSubmit">提交批改，看盲点分析</button>
+    <button class="btn" id="btnAllRight">全部算对</button>
+    <span class="small muted" id="counter"></span>
+  </div>
+</div>
+
+<script src="data/bundle.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var S = Store, E = Engine, U = UI;
+  U.mountNav('grade.html');
+
+  var testId = U.qs('test');
+  var test = testId ? S.getTest(testId) : (S.currentTest() || S.state.tests[0]);
+
+  if (!test) {
+    U.el('out').innerHTML = '<div class="card"><div class="empty">' +
+      '<div class="big">没有待批改的试卷</div>' +
+      '先去<a href="paper.html">出一张卷</a>，做完再回来批改。</div></div>';
+    return;
+  }
+
+  var wrong = {};
+  (test.wrong || []).forEach(function (q) { wrong[q] = 1; });
+
+  /* 渲染 */
+  var html = '<div class="card tight" style="margin-bottom:14px">' +
+    '<div class="li-head" style="margin-bottom:0">' +
+    '<span class="chip blue">' + U.fmtDate(test.at) + '</span>' +
+    '<span class="chip">' + test.items.length + ' 题</span>' +
+    '<span class="chip">' + U.esc(test.scopeLabel || '') + '</span>' +
+    (test.mode === 'probe' ? '<span class="chip amber">根因验证卷</span>' : '') +
+    (test.mode === 'mixed' ? '<span class="chip amber">综合卷</span>' : '') +
+    (test.done ? '<span class="chip green">已批改过，可重新提交</span>' : '') +
+    '</div></div>';
+
+  html += '<div class="card"><ul class="grade-list" id="glist">' +
+    test.items.map(function (it) {
+      var q = E.question(it.qid);
+      var t = E.topic(it.topicId);
+      var isWrong = !!wrong[it.qid];
+      var isShort = (q.type === 'short' || q.type === 'self');
+      return '<li class="grade-item' + (isWrong ? ' is-wrong' : ' is-ok') + '" data-qid="' + U.esc(it.qid) + '">' +
+        '<span class="g-no">' + it.no + '</span>' +
+        '<div class="g-body">' +
+        '<p class="g-prompt">' + U.esc(q.prompt) + '</p>' +
+        '<div class="g-ans"><b>答案：</b>' + U.esc(q.answer) +
+        (it.points ? '　<span class="chip">' + it.points + ' 分</span>' : '') +
+        '　<span class="muted small">' + U.esc(t.name) + '</span></div>' +
+        (isShort && q.solution
+          ? '<details style="margin-top:5px"><summary class="small muted" style="cursor:pointer">看解题过程</summary>' +
+            '<div class="small pre" style="margin-top:5px;color:var(--ink-2)">' + U.esc(q.solution) + '</div></details>'
+          : '') +
+        '</div>' +
+        '<div class="g-toggle">' +
+        '<button class="tg ok' + (isWrong ? '' : ' on') + '" data-v="ok" title="做对了">✓</button>' +
+        '<button class="tg bad' + (isWrong ? ' on' : '') + '" data-v="bad" title="做错了">✕</button>' +
+        '</div></li>';
+    }).join('') + '</ul></div>';
+
+  U.el('out').innerHTML = html;
+  U.el('submitRow').style.display = 'flex';
+
+  function refresh() {
+    var n = Object.keys(wrong).length;
+    var total = test.items.length;
+    var right = total - n;
+    U.el('counter').textContent = '已判：对 ' + right + ' 题，错 ' + n + ' 题，正确率 ' +
+      (total ? Math.round(right / total * 100) : 0) + '%';
+  }
+  refresh();
+
+  U.el('glist').addEventListener('click', function (e) {
+    var btn = e.target.closest('.tg');
+    if (!btn) return;
+    var li = btn.closest('.grade-item');
+    var qid = li.getAttribute('data-qid');
+    var v = btn.getAttribute('data-v');
+    if (v === 'bad') wrong[qid] = 1; else delete wrong[qid];
+    li.classList.toggle('is-wrong', v === 'bad');
+    li.classList.toggle('is-ok', v === 'ok');
+    li.querySelector('.tg.ok').classList.toggle('on', v === 'ok');
+    li.querySelector('.tg.bad').classList.toggle('on', v === 'bad');
+    refresh();
+  });
+
+  U.el('btnAllRight').onclick = function () {
+    wrong = {};
+    U.el('glist').querySelectorAll('.grade-item').forEach(function (li) {
+      li.classList.remove('is-wrong'); li.classList.add('is-ok');
+      li.querySelector('.tg.ok').classList.add('on');
+      li.querySelector('.tg.bad').classList.remove('on');
+    });
+    refresh();
+  };
+
+  U.el('btnSubmit').onclick = function () {
+    var ids = Object.keys(wrong);
+    S.submitGrade(test.id, ids);
+    location.href = 'report.html?test=' + test.id;
+  };
+})();
+</script>
+</body>
+</html>

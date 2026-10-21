@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>出卷 · 初三数学盲点诊断</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>出卷</h1>
+  <p class="sub">选好范围和题量，生成一张 A4 试卷。学生卷和答案卷分开打印，答案卷另起一页。</p>
+
+  <div class="card no-print" id="cfgCard">
+    <label class="field">
+      <span class="lbl">范围</span>
+      <div class="opt-group" id="scopeOpts">
+        <div class="opt on" data-scope="all">全册（九上 + 九下）</div>
+        <div class="opt" data-scope="上">只考九上</div>
+        <div class="opt" data-scope="下">只考九下</div>
+        <div class="opt" data-scope="ch">按章节选</div>
+      </div>
+    </label>
+
+    <div id="chapterPicker" style="display:none;margin-bottom:14px">
+      <div class="lbl small" style="color:var(--ink-2);margin-bottom:8px">勾选要考的章节</div>
+      <div id="chapterList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <label class="field">
+      <span class="lbl">题量</span>
+      <div class="opt-group" id="countOpts">
+        <div class="opt" data-count="12">12 题</div>
+        <div class="opt" data-count="20">20 题</div>
+        <div class="opt on" data-count="25">25 题</div>
+      </div>
+      <div class="small muted" style="margin-top:6px">含解答题在内，选择填空占大部分。</div>
+    </label>
+
+    <label class="field">
+      <span class="lbl">解答题</span>
+      <div class="opt-group" id="shortOpts">
+        <div class="opt" data-short="0">不含</div>
+        <div class="opt" data-short="2">2 道</div>
+        <div class="opt on" data-short="3">3 道</div>
+        <div class="opt" data-short="5">5 道</div>
+      </div>
+      <div class="small muted" id="shortHint" style="margin-top:6px"></div>
+    </label>
+
+    <label class="field">
+      <span class="lbl">难度</span>
+      <div class="opt-group" id="diffOpts">
+        <div class="opt" data-diff="easy">基础偏多</div>
+        <div class="opt" data-diff="even">均衡</div>
+        <div class="opt" data-diff="hard">提高偏多</div>
+        <div class="opt on" data-diff="sd">山东中考（偏难）</div>
+      </div>
+      <div class="small muted" id="diffHint" style="margin-top:6px"></div>
+    </label>
+
+    <label class="field">
+      <span class="lbl">模式</span>
+      <div class="opt-group" id="modeOpts">
+        <div class="opt on" data-mode="normal">常规卷</div>
+        <div class="opt" data-mode="mixed" id="optMixed">综合卷（含根因探测）</div>
+        <div class="opt" data-mode="probe" id="optProbe">根因验证卷</div>
+      </div>
+      <div class="small muted" id="modeHint" style="margin-top:6px"></div>
+    </label>
+
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn btn-primary btn-lg" id="btnGen">生成试卷</button>
+      <button class="btn" id="btnAgain" style="display:none">换一套题</button>
+    </div>
+    <div class="btn-row" id="printRow" style="display:none;margin-top:10px;padding-top:14px;border-top:1px solid var(--line)">
+      <button class="btn" id="btnPrintStudent">打印学生卷</button>
+      <button class="btn" id="btnPrintKey">打印答案卷</button>
+      <button class="btn" id="btnPrintBoth">一起打印</button>
+      <span class="small muted">答案卷会另起一页，批改时单独拿。</span>
+    </div>
+  </div>
+
+  <div id="paperOut"></div>
+
+  <div class="btn-row no-print" id="nextRow" style="display:none">
+    <a class="btn btn-blue btn-lg" href="grade.html">做完去批改 →</a>
+  </div>
+</div>
+
+<script src="data/bundle.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var S = Store, E = Engine, U = UI;
+  U.mountNav('paper.html');
+
+  var cfg = {
+    scope: 'all',
+    chapters: [],
+    count: 25,
+    shortCount: 3,
+    diff: 'sd',
+    mode: 'normal'
+  };
+  var RATIO = {
+    easy: { basic: 0.5, standard: 0.35, advanced: 0.15 },
+    even: { basic: 0.4, standard: 0.4, advanced: 0.2 },
+    hard: { basic: 0.25, standard: 0.45, advanced: 0.3 },
+    sd: { basic: 0.2, standard: 0.45, advanced: 0.35 }
+  };
+  var DIFF_HINT = {
+    easy: '基础题占一半，先建立信心。',
+    even: '基础、标准、提高各占一部分。',
+    hard: '提高题占三成，计算量和综合度都上一个台阶。',
+    sd: '按山东中考风格：提高题占三成半，应用题、推理题、建模题加权，计算量偏大。'
+  };
+  var lastPaper = null;
+
+  /* ---- 章节选择器 ---- */
+  var chapters = E.data.chapters;
+  U.el('chapterList').innerHTML = chapters.map(function (c) {
+    return '<div class="opt" data-ch="' + U.esc(c.chap) + '" style="font-size:13px;padding:6px 12px">' +
+      (c.semester === '上' ? '九上 · ' : '九下 · ') + U.esc(E.chapterShort(c.chap)) +
+      ' <span class="muted">(' + c.count + ')</span></div>';
+  }).join('');
+
+  U.el('chapterList').addEventListener('click', function (e) {
+    var t = e.target.closest('.opt');
+    if (!t) return;
+    t.classList.toggle('on');
+    var ch = t.getAttribute('data-ch');
+    var i = cfg.chapters.indexOf(ch);
+    if (i === -1) cfg.chapters.push(ch); else cfg.chapters.splice(i, 1);
+  });
+
+  /* ---- 选项组 ---- */
+  function bindGroup(id, key, attr, cb) {
+    U.el(id).addEventListener('click', function (e) {
+      var t = e.target.closest('.opt');
+      if (!t) return;
+      Array.prototype.forEach.call(U.el(id).children, function (c) { c.classList.remove('on'); });
+      t.classList.add('on');
+      var v = t.getAttribute(attr);
+      cfg[key] = (key === 'count' || key === 'shortCount') ? parseInt(v, 10) : v;
+      if (cb) cb(v);
+    });
+  }
+  bindGroup('scopeOpts', 'scope', 'data-scope', function (v) {
+    U.el('chapterPicker').style.display = (v === 'ch') ? 'block' : 'none';
+  });
+  bindGroup('countOpts', 'count', 'data-count', renderShortHint);
+  bindGroup('shortOpts', 'shortCount', 'data-short', renderShortHint);
+  bindGroup('diffOpts', 'diff', 'data-diff', function (v) {
+    U.el('diffHint').textContent = DIFF_HINT[v] || '';
+  });
+  bindGroup('modeOpts', 'mode', 'data-mode', renderModeHint);
+  U.el('diffHint').textContent = DIFF_HINT[cfg.diff];
+
+  function renderShortHint() {
+    var n = Math.min(cfg.shortCount, cfg.count);
+    var obj = cfg.count - n;
+    var minutes = Math.round(obj * 1.2 + n * 6);
+    U.el('shortHint').textContent = n
+      ? '选择填空 ' + obj + ' 道 + 解答题 ' + n + ' 道，每题留出书写空间，预计 ' + minutes + ' 分钟。'
+      : '纯客观题，出卷快、判卷快，适合快速摸底。预计 ' + minutes + ' 分钟。';
+  }
+  renderShortHint();
+
+  /* ---- 模式提示 ---- */
+  var probes = S.probeTargets();
+  var blind = S.blindSpots();
+  (function initModes() {
+    if (!probes.length) {
+      U.el('optProbe').style.opacity = '.4';
+      U.el('optProbe').style.pointerEvents = 'none';
+      U.el('optMixed').style.opacity = '.4';
+      U.el('optMixed').style.pointerEvents = 'none';
+    }
+    /* 从报告页跳过来时预选模式 */
+    var want = U.qs('mode');
+    if ((want === 'probe' || want === 'mixed') && probes.length) {
+      Array.prototype.forEach.call(U.el('modeOpts').children, function (c) {
+        c.classList.toggle('on', c.getAttribute('data-mode') === want);
+      });
+      cfg.mode = want;
+    }
+    renderModeHint(cfg.mode);
+  })();
+
+  function renderModeHint(v) {
+    var h = U.el('modeHint');
+    if (v === 'probe') {
+      h.innerHTML = '只考疑似根因知识点（' + probes.length + ' 个），用来验证判断对不对。这些点可能来自七、八年级甚至小学。';
+    } else if (v === 'mixed') {
+      h.innerHTML = '约 30% 的题考疑似根因点，其余按范围出。既能继续查漏，又能验证根因。';
+    } else {
+      h.innerHTML = blind.length
+        ? '按范围均匀出题，其中 ' + blind.length + ' 个历史盲点会被加权，出现概率更高。'
+        : '按范围均匀出题。做过测试后，盲点会自动加权。';
+    }
+  }
+
+  /* ---- 生成 ---- */
+  U.el('btnGen').onclick = function () { generate(false); };
+  U.el('btnAgain').onclick = function () { generate(true); };
+
+  function generate(shuffle) {
+    if (cfg.scope === 'ch' && !cfg.chapters.length) {
+      U.toast('先勾选至少一个章节');
+      return;
+    }
+
+    var scope = {};
+    if (cfg.scope === 'all') scope.semesters = ['上', '下'];
+    else if (cfg.scope === 'ch') scope.chapters = cfg.chapters.slice();
+    else scope.semesters = [cfg.scope];
+
+    /* 重点：历史盲点（初三本体） */
+    var focus = blind.filter(function (b) { return b.isCore; }).map(function (b) { return b.topicId; });
+
+    var seed = shuffle ? Math.floor(Math.random() * 1e9) : 20261021;
+
+    var paper = E.generatePaper({
+      scope: scope,
+      count: cfg.count,
+      shortCount: Math.min(cfg.shortCount, cfg.count),
+      ratio: RATIO[cfg.diff],
+      hardMode: (cfg.diff === 'sd' || cfg.diff === 'hard'),
+      mode: cfg.mode,
+      focus: focus,
+      probe: probes,
+      usedQids: S.state.usedQids,
+      topicStats: S.state.topicStats,
+      seed: seed
+    });
+
+    if (!paper.count) {
+      U.toast(cfg.mode === 'probe'
+        ? '还没有根因候选，先做一张常规卷并批改'
+        : '这个范围里没题了，换个范围试试');
+      return;
+    }
+
+    /* 只保留一张待批改的卷 */
+    S.state.tests = S.state.tests.filter(function (t) { return t.done; });
+
+    var label = scopeLabel(scope);
+    var test = S.createTest(paper, label);
+
+    lastPaper = paper;
+    render(paper, test);
+    U.el('btnAgain').style.display = '';
+    U.el('printRow').style.display = 'flex';
+    U.el('nextRow').style.display = 'flex';
+    U.el('cfgCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function scopeLabel(scope) {
+    if (scope.semesters) {
+      if (scope.semesters.length === 2) return '全册';
+      return '九' + scope.semesters[0];
+    }
+    return '按章 · ' + scope.chapters.length + ' 章';
+  }
+
+  /* ---- 渲染试卷 ---- */
+  function render(paper, test) {
+    var meta = E.data.meta;
+    var total = paper.count;
+    var objN = paper.items.filter(function (it) { return it.type === 'choice' || it.type === 'numeric'; }).length;
+    var shortN = total - objN;
+    var minutes = Math.round(objN * 1.2 + shortN * 6);
+    var titleSuffix = paper.mode === 'probe' ? '根因验证卷'
+                    : paper.mode === 'mixed' ? '综合卷' : '诊断卷';
+
+    var head =
+      '<div class="paper student-paper">' +
+      '<div class="paper-head">' +
+      '<div class="paper-title">初三数学 · ' + titleSuffix + '</div>' +
+      '<div class="paper-meta">' +
+      '<span>姓名 <span class="fill"></span></span>' +
+      '<span>日期 <span class="fill"></span></span>' +
+      '<span>建议用时 ' + minutes + ' 分钟</span>' +
+      '<span>共 ' + total + ' 题</span>' +
+      '</div></div>';
+
+    var body = paper.sections.map(function (sec) {
+      var nums = ['一', '二', '三', '四'];
+      var idx = ['choice', 'numeric', 'short'].indexOf(sec.key);
+      var pts = sec.items.reduce(function (a, it) { return a + (it.points || 0); }, 0);
+      var title = nums[idx] + '、' + sec.title + (pts ? '（共 ' + pts + ' 分）' : '');
+      return '<div class="sec sec-' + sec.key + '">' +
+        '<div class="sec-title">' + title + '</div>' +
+        '<p class="sec-hint">' + sec.hint + '</p>' +
+        sec.items.map(function (it) {
+          var q = E.question(it.qid);
+          return U.questionHTML(q, it.no);
+        }).join('') + '</div>';
+    }).join('');
+
+    /* ---- 答案卷：速查表 + 逐题解析 ---- */
+    var objItems = paper.items.filter(function (it) {
+      return it.type === 'choice' || it.type === 'numeric';
+    });
+    var shortItems = paper.items.filter(function (it) {
+      return it.type === 'short' || it.type === 'self';
+    });
+
+    var keyRows = '';
+    for (var i = 0; i < objItems.length; i += 5) {
+      var chunk = objItems.slice(i, i + 5);
+      while (chunk.length < 5) chunk.push(null);
+      keyRows += '<tr>' + chunk.map(function (it) {
+        return '<td>' + (it ? it.no : '') + '</td>';
+      }).join('') + '</tr><tr>' + chunk.map(function (it) {
+        return '<td class="ans-cell">' + (it ? U.esc(E.question(it.qid).answer) : '') + '</td>';
+      }).join('') + '</tr>';
+    }
+
+    var key = '<div class="paper answer-key">' +
+      '<div class="paper-head">' +
+      '<div class="paper-title">答案与解析</div>' +
+      '<div class="paper-meta"><span>共 ' + total + ' 题</span>' +
+      '<span>批改用 · 不要先给孩子</span></div></div>' +
+
+      '<div class="sec-title">答案速查</div>' +
+      '<p class="sec-hint">对照题号直接判，把错的题号记下来。</p>' +
+      (objItems.length ? '<table class="ans-table">' + keyRows + '</table>' : '') +
+      (shortItems.length
+        ? '<p class="small" style="margin:0 0 14px">解答题第 ' +
+          shortItems.map(function (it) { return it.no; }).join('、') +
+          ' 题：按步骤给分，答案与过程见下方逐题解析。</p>'
+        : '') +
+
+      '<div class="sec-title">逐题解析</div>' +
+      '<p class="sec-hint">孩子问「为什么」的时候用。</p>' +
+      paper.items.map(function (it) {
+        var q = E.question(it.qid);
+        var t = E.topic(it.topicId);
+        var isShort = (q.type === 'short' || q.type === 'self');
+        var body = isShort
+          ? '<p class="small pre" style="margin:0">' + U.esc(q.solution || q.explanation) + '</p>'
+          : '<p class="small muted" style="margin:0">' + U.esc(q.explanation) + '</p>';
+        return '<div class="q"><span class="q-no">' + it.no + '.</span>' +
+          '<p class="q-prompt">' + U.esc(q.prompt) + '</p>' +
+          choicesHTMLFor(q) +
+          '<p class="small" style="margin:0 0 4px"><b>答案：</b>' + U.esc(q.answer) +
+          (it.points ? '　<span class="q-tag">' + it.points + ' 分</span>' : '') +
+          '　<span class="q-tag">' + U.esc(t.name) + ' · ' + E.gradeLabel(t.grade) +
+          (it.isProbe ? ' · 根因探测' : '') + '</span></p>' +
+          body +
+          '</div>';
+      }).join('') +
+      '</div>';
+
+    U.el('paperOut').innerHTML = head + body + '</div>' + key;
+  }
+
+  function choicesHTMLFor(q) {
+    if (!q.choices || !q.choices.length) return '';
+    return '<div class="small muted" style="margin:0 0 4px">' +
+      q.choices.map(function (c) { return c.key + '. ' + U.esc(c.text); }).join('　') +
+      '</div>';
+  }
+
+  /* ---- 打印 ---- */
+  function printAs(mode) {
+    document.body.classList.remove('print-student-only', 'print-key-only');
+    if (mode === 'student') document.body.classList.add('print-student-only');
+    if (mode === 'key') document.body.classList.add('print-key-only');
+    setTimeout(function () {
+      window.print();
+      setTimeout(function () {
+        document.body.classList.remove('print-student-only', 'print-key-only');
+      }, 400);
+    }, 60);
+  }
+  U.el('btnPrintStudent').onclick = function () { printAs('student'); };
+  U.el('btnPrintKey').onclick = function () { printAs('key'); };
+  U.el('btnPrintBoth').onclick = function () { printAs('both'); };
+
+  /* 带 ?auto=1 直接生成，方便从别处一键出卷 */
+  if (U.qs('auto') === '1') {
+    setTimeout(function () { generate(false); }, 30);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>初三数学 · 盲点诊断</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>初三数学 · 盲点诊断</h1>
+  <p class="sub">出卷 → 打印 → 做卷 → 批改 → 找盲点 → 讲解 → 新卷。九年级全册 82 个知识点，先修链可一路追到小学。</p>
+
+  <div id="pendingBox"></div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="btn-row">
+      <a class="btn btn-primary btn-lg" href="paper.html">出卷</a>
+      <a class="btn" href="grade.html">批改</a>
+      <a class="btn" href="report.html">盲点报告</a>
+      <a class="btn" href="teach.html">讲解</a>
+    </div>
+  </div>
+
+  <h2>盲点概览</h2>
+  <div id="blindBox"></div>
+
+  <h2>历史测试</h2>
+  <div id="historyBox"></div>
+
+  <h2>使用说明</h2>
+  <div class="card">
+    <p><strong>一次完整循环大约 40 分钟：</strong>出 20 道题打印出来，孩子做 20 分钟，你在批改页勾出错题，系统给出盲点分析和根因链，再打印讲解卡。下一张卷会自动重点考这些盲点，并直接考根因点来验证判断。</p>
+    <p class="small muted">数据来源：<span id="srcInfo"></span>。题库由 AI 生成、未经教师审核，题目答案建议家长扫一眼再给孩子用。诊断结果是<b>假设</b>，靠下一张卷验证。</p>
+    <div class="btn-row no-print" style="margin-top:12px">
+      <button class="btn btn-sm" id="btnExport">导出数据备份</button>
+      <button class="btn btn-sm" id="btnImport">导入备份</button>
+      <button class="btn btn-sm" id="btnReset">清空重来</button>
+      <input type="file" id="fileImport" accept=".json" style="display:none">
+    </div>
+  </div>
+</div>
+
+<script src="data/bundle.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function () {
+  var S = Store, E = Engine, U = UI;
+  U.mountNav('index.html');
+
+  var st = S.stats();
+  var meta = E.data.meta;
+
+  /* 待批改 */
+  var pending = S.currentTest();
+  if (pending) {
+    U.el('pendingBox').innerHTML =
+      '<div class="note blue">有一张卷还没批改：' + U.fmtDate(pending.at) + '，' +
+      pending.items.length + ' 道题。做完后去<a href="grade.html">批改</a>。</div>';
+  }
+
+  /* 指标 */
+  U.el('metrics').innerHTML = [
+    metric('已做卷数', st.testCount, '张'),
+    metric('累计题目', st.totalQ, '道'),
+    metric('总体正确率', st.accuracy, '%'),
+    metric('当前盲点', st.blindCount, '个'),
+    metric('题库消耗', st.qUsed + '/' + st.qTotal, '')
+  ].join('');
+
+  function metric(k, v, unit) {
+    return '<div class="metric"><div class="k">' + k + '</div><div class="v">' +
+      v + (unit ? '<small> ' + unit + '</small>' : '') + '</div></div>';
+  }
+
+  /* 盲点 */
+  var blind = S.blindSpots();
+  if (!blind.length) {
+    U.el('blindBox').innerHTML =
+      '<div class="card flat"><div class="empty"><div class="big">还没有盲点记录</div>' +
+      '先出第一张卷，做完批改后这里就会出现。</div></div>';
+  } else {
+    U.el('blindBox').innerHTML = '<div class="card"><ul class="list">' +
+      blind.slice(0, 8).map(function (b) {
+        return '<li><div class="li-head">' +
+          '<span class="li-title">' + U.esc(b.name) + '</span>' +
+          '<span class="chip ' + (b.isCore ? 'blue' : 'amber') + '">' + b.gradeLabel + '</span>' +
+          '<span class="chip">' + U.esc(b.chapterShort) + '</span>' +
+          (b.downstream ? '<span class="chip red">影响 ' + b.downstream + ' 个后续知识点</span>' : '') +
+          '</div><div class="li-sub">错了 ' + b.wrong + ' 次 / 共做 ' + b.asked +
+          ' 次 · 最近 ' + U.fmtDay(b.lastWrongAt) + '</div></li>';
+      }).join('') + '</ul>' +
+      (blind.length > 8 ? '<p class="small muted" style="margin:10px 0 0">还有 ' + (blind.length - 8) + ' 个，见<a href="report.html">盲点报告</a>。</p>' : '') +
+      '</div>';
+  }
+
+  /* 历史 */
+  var done = S.state.tests.filter(function (t) { return t.done; });
+  if (!done.length) {
+    U.el('historyBox').innerHTML = '<div class="card flat"><div class="empty">' +
+      '<div class="big">还没有完成的测试</div>' +
+      '<a class="btn btn-blue" href="paper.html" style="margin-top:10px">出第一张卷</a></div></div>';
+  } else {
+    U.el('historyBox').innerHTML = '<div class="card"><ul class="list">' +
+      done.map(function (t) {
+        var acc = t.items.length ? Math.round((t.items.length - t.wrong.length) / t.items.length * 100) : 0;
+        return '<li><div class="li-head">' +
+          '<a class="li-title" href="report.html?test=' + t.id + '">' + U.fmtDate(t.gradedAt || t.at) + '</a>' +
+          '<span class="chip ' + (acc >= 85 ? 'green' : acc >= 60 ? 'amber' : 'red') + '">正确率 ' + acc + '%</span>' +
+          '<span class="chip">' + t.items.length + ' 题</span>' +
+          (t.wrong.length ? '<span class="chip red">错 ' + t.wrong.length + '</span>' : '<span class="chip green">全对</span>') +
+          (t.mode === 'probe' ? '<span class="chip amber">根因验证</span>' : '') +
+          (t.mode === 'mixed' ? '<span class="chip amber">综合</span>' : '') +
+          '</div><div class="li-sub">' + U.esc(t.scopeLabel || '') + '</div></li>';
+      }).join('') + '</ul></div>';
+  }
+
+  U.el('srcInfo').textContent = meta.source + '，' + meta.coreCount +
+    ' 个初三知识点 + ' + meta.depCount + ' 条先修边';
+
+  /* 备份 */
+  U.el('btnExport').onclick = function () {
+    var blob = new Blob([S.exportJSON()], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '初三数学诊断备份-' + U.fmtDay(new Date().toISOString()) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    U.toast('已导出');
+  };
+  U.el('btnImport').onclick = function () { U.el('fileImport').click(); };
+  U.el('fileImport').onchange = function (e) {
+    var f = e.target.files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        S.importJSON(r.result);
+        U.toast('导入成功');
+        setTimeout(function () { location.reload(); }, 600);
+      } catch (err) {
+        U.toast('导入失败：' + err.message);
+      }
+    };
+    r.readAsText(f);
+  };
+  U.el('btnReset').onclick = function () {
+    if (confirm('清空所有测试记录和盲点数据？此操作不可撤销，建议先导出备份。')) {
+      S.reset();
+      location.reload();
+    }
+  };
+})();
+</script>
+</body>
+</html>
