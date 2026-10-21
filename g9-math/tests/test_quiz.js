@@ -167,14 +167,17 @@ console.log('\n== 题图 ==');
   });
   eq(broken.length, 0, '题图里没有脚本或事件属性');
 
-  /* 题图只挂在自编解答题上，客观题不该有 */
-  var objWithFig = figs.filter(function (q) { return q.type !== 'short'; });
-  eq(objWithFig.length, 0, '客观题不带题图');
+  /* 客观题也可以带图（圆、坡度、函数图象这类确实需要），解答题基本都有 */
+  var byType = {};
+  figs.forEach(function (q) { byType[q.type] = (byType[q.type] || 0) + 1; });
+  ok(byType.short > 0, '解答题带图 ' + (byType.short || 0) + ' 道');
+  ok((byType.choice || 0) + (byType.numeric || 0) > 0,
+    '客观题带图 ' + ((byType.choice || 0) + (byType.numeric || 0)) + ' 道');
 
   var noAns = figs.filter(function (q) {
-    return !q.answer || !q.solution || !q.points;
+    return !q.answer || !q.explanation;
   });
-  eq(noAns.length, 0, '带图题都还有答案、过程和分值');
+  eq(noAns.length, 0, '带图题都还有答案和解析');
 })();
 
 console.log('\n' + (fail ? '✗ ' : '✓ ') + pass + ' 通过 / ' + fail + ' 失败');

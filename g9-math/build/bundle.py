@@ -50,6 +50,8 @@ def main():
                     help="自编解答题（不在上游数据里）")
     ap.add_argument("--figs", default="data/sh-figs.json",
                     help="解答题题图（内联 SVG），由 build/make_figs.py 生成")
+    ap.add_argument("--figs-obj", default="data/obj-figs.json",
+                    help="客观题题图，由 build/make_figs_obj.py 生成")
     args = ap.parse_args()
 
     topics = load(args.src, "topics.json")
@@ -118,6 +120,13 @@ def main():
         if e["topicId"] in closure and e["prerequisiteId"] in closure
     ]
 
+    # ---- 4b. 题图（两批：自编解答题 + 客观题） ----
+    figs = {}
+    for fp in (args.figs, args.figs_obj):
+        if fp and os.path.exists(fp):
+            with open(fp, encoding="utf-8") as f:
+                figs.update(json.load(f))
+
     # ---- 5. 闭包内的题（初三题优先，先修点的题用于讲解例题） ----
     out_qs = []
     for q in questions:
@@ -134,14 +143,11 @@ def main():
         }
         if q.get("choices"):
             item["choices"] = [{"key": c["key"], "text": c["text"]} for c in q["choices"]]
+        if q["id"] in figs:
+            item["fig"] = figs[q["id"]]
         out_qs.append(item)
 
     # ---- 5b. 合入自编解答题 ----
-    figs = {}
-    if args.figs and os.path.exists(args.figs):
-        with open(args.figs, encoding="utf-8") as f:
-            figs = json.load(f)
-
     self_qs = []
     if args.sh and os.path.exists(args.sh):
         with open(args.sh, encoding="utf-8") as f:

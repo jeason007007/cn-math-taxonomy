@@ -286,6 +286,10 @@
 
     /* 先把 probeQuota 个名额留给根因候选 */
     var probePicked = 0;
+    /* 卷面构成：选择题要占住一定比例。每个知识点下选择题/填空题都有几道，
+       如果只按「难度就近」取，整张卷会几乎全是填空题，不像中考卷。 */
+    var choiceQuota = Math.round(objCount * 0.45);
+    var choicePicked = 0;
     for (var s = 0; s < slots.length; s++) {
       var slotDiff = slots[s];
       var cands = poolForSlot(slotDiff);
@@ -310,12 +314,17 @@
       /* 选该知识点下最贴近目标难度、且没做过的题 */
       var qs = Q_OF[chosen.id].filter(function (q) { return isObjective(q) && !usedQids[q.id]; });
       if (!qs.length) qs = Q_OF[chosen.id].filter(isObjective);
+      if (choicePicked < choiceQuota) {
+        var onlyChoice = qs.filter(function (q) { return q.type === 'choice'; });
+        if (onlyChoice.length) qs = onlyChoice;
+      }
       qs.sort(function (a, b) {
         return Math.abs(DIFF_RANK[a.difficulty] - DIFF_RANK[slotDiff]) -
                Math.abs(DIFF_RANK[b.difficulty] - DIFF_RANK[slotDiff]);
       });
       var q = qs[0];
       if (!q) { topicUsed[chosen.id] = 1; continue; }
+      if (q.type === 'choice') choicePicked++;
 
       picked.push({
         qid: q.id,
