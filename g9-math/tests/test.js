@@ -21,9 +21,17 @@ function ok(name, cond, extra) {
 }
 
 console.log('\n== 数据完整性 ==');
-ok('知识点数 = 376', D.topics.length === 376, D.topics.length);
+/* 上游会更新，所以不写死具体数字：跟 meta 自洽 + 卡下限防缩水 */
+ok('知识点数 = meta.closureCount', D.topics.length === D.meta.closureCount,
+  D.topics.length + ' vs ' + D.meta.closureCount);
+ok('知识点数 >= 386（上游 2026-10-22 版）', D.topics.length >= 386, D.topics.length);
 ok('初三本体 = 82', D.topics.filter(t => t.isCore).length === 82);
-ok('先修边 = 632', D.deps.length === 632, D.deps.length);
+ok('先修边 = meta.depCount', D.deps.length === D.meta.depCount,
+  D.deps.length + ' vs ' + D.meta.depCount);
+ok('先修边 >= 664（上游 2026-10-22 版）', D.deps.length >= 664, D.deps.length);
+ok('没有物理/英语点混入',
+  D.topics.every(t => !/^cn[pe]_/.test(t.id)),
+  D.topics.filter(t => /^cn[pe]_/.test(t.id)).map(t => t.id).slice(0, 5).join(','));
 ok('每题都有解析', D.questions.every(q => q.explanation && q.explanation.length > 0));
 ok('每题都有答案', D.questions.every(q => q.answer !== undefined && String(q.answer).length > 0));
 ok('初三知识点都有题', D.topics.filter(t => t.isCore).every(t => E.questionsOf(t.id).length > 0));

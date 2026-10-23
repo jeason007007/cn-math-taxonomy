@@ -64,10 +64,13 @@ def main():
     tmap = {t["id"]: t for t in topics}
 
     # ---- 1. 初三数学知识点 ----
+    # 数学点的 subject 字段缺省（None）；英语是 "english"；物理是 "physics"。
+    # 上游 2026-10-22 加了初中物理，其中 40 个点是九年级的——只判 != "english"
+    # 会把物理点和物理题一起混进数学卷，所以这里显式只取无 subject 的数学点。
     core_ids = [
         t["id"]
         for t in topics
-        if t.get("grade") == G9 and t.get("subject") != "english"
+        if t.get("grade") == G9 and not t.get("subject")
     ]
 
     # ---- 2. 先修闭包（沿 prerequisite 边向上） ----
@@ -201,7 +204,9 @@ def main():
     core_qs = [q for q in out_qs if q["topicId"] in set(core_ids)]
     meta = {
         "source": "cn-math-taxonomy (CC BY-NC 4.0)",
-        "generatedAt": "2026-10-21",
+        "upstream": "xiaoyang111222/cn-math-taxonomy@d9c1ab7",
+        "dataVersion": "2026-10-22",
+        "generatedAt": "2026-10-23",
         "coreCount": len(core_ids),
         "closureCount": len(closure),
         "depCount": len(out_deps),
