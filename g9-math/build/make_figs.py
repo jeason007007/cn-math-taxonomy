@@ -513,6 +513,719 @@ def f_spinner():
     return SVG(340, 240, p, "转盘")
 
 
+# ---------- 北师大九上提高题的图 ----------
+
+def f_bn003():
+    """bn003 平行四边形 ABCD，E 为 BC 中点，AE 交 BD 于 F"""
+    p = []
+    A, B, C, D = (60, 180), (260, 180), (360, 60), (160, 60)
+    E, F = (310, 120), (227, 140)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(A[0], A[1], E[0], E[1], color=GRAY))
+    p.append(L(B[0], B[1], D[0], D[1], color=GRAY))
+    p.append(DOT(*E) + DOT(*F))
+    p.append(T(44, 186, "A", size=14))
+    p.append(T(266, 186, "B", size=14))
+    p.append(T(372, 56, "C", size=14))
+    p.append(T(150, 56, "D", size=14))
+    p.append(T(320, 138, "E", size=14))
+    p.append(T(210, 154, "F", size=14))
+    return SVG(420, 212, p, "平行四边形 ABCD，E 为 BC 中点，AE 交 BD 于 F")
+
+
+def f_bn023():
+    """bn023 平行四边形 ABCD，CF 延长交 BA 延长线于 G"""
+    p = []
+    # 数学坐标 B(0,0) C(4,0) A(1,2) D(5,2) 映射到屏幕
+    def M(x, y):
+        return (80 + 62 * x, 300 - 40 * y)
+    B, C, A, D = M(0, 0), M(4, 0), M(1, 2), M(5, 2)
+    F, E, G = M(11 / 3.0, 2), M(3.75, 1.5), M(3, 6)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(B[0], B[1], D[0], D[1], color=GRAY))
+    p.append(L(G[0], G[1], C[0], C[1], color=GRAY))
+    # G 在 BA 的延长线上，所以 G-A-B 三点共线，这条线要画出来
+    p.append(L(G[0], G[1], B[0], B[1], color=GRAY, dash="6 3"))
+    p.append(DOT(*F) + DOT(*E))
+    p.append(T(A[0] - 14, A[1] + 4, "A", size=14))
+    p.append(T(B[0] - 14, B[1] + 16, "B", size=14))
+    p.append(T(C[0] + 14, C[1] + 16, "C", size=14))
+    p.append(T(D[0] + 14, D[1] + 4, "D", size=14))
+    p.append(T(G[0] - 4, G[1] - 10, "G", size=14))
+    p.append(T(F[0] + 2, F[1] - 10, "F", size=14))
+    p.append(T(E[0] + 14, E[1] + 16, "E", size=14))
+    return SVG(430, 330, p, "平行四边形 ABCD，CF 延长交 BA 延长线于 G")
+
+
+def f_bn024():
+    """bn024 新定义 k 倍四边形，两幅对照图"""
+    p = []
+    # ---- 图 1：平行四边形，E 为 OB 中点 ----
+    def M1(x, y):
+        return (46 + 42 * x, 190 - 42 * y)
+    A, B, C, D = M1(0, 0), M1(4, 0), M1(5, 2), M1(1, 2)
+    O, E = M1(2.5, 1), M1(2.25, 0.5)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(A[0], A[1], C[0], C[1], color=GRAY))
+    p.append(L(B[0], B[1], D[0], D[1], color=GRAY))
+    p.append(L(A[0], A[1], E[0], E[1], color=GRAY))
+    p.append(L(E[0], E[1], C[0], C[1], color=GRAY))
+    p.append(DOT(*O) + DOT(*E))
+    p.append(T(A[0] - 12, A[1] + 14, "A", size=13))
+    p.append(T(B[0] - 12, B[1] + 14, "B", size=13))
+    p.append(T(C[0] + 12, C[1] - 2, "C", size=13))
+    p.append(T(D[0] + 12, D[1] - 2, "D", size=13))
+    p.append(T(O[0] + 10, O[1] - 6, "O", size=13))
+    p.append(T(E[0] - 12, E[1] + 16, "E", size=13))
+    p.append(T(140, 222, "图 1", size=12, color=GRAY))
+
+    # ---- 图 2：k 倍四边形（AC 被 BD 平分，OD > OB）----
+    def M2(x, y):
+        return (300 + 42 * x, 190 - 42 * y)
+    A2, C2 = M2(0, 0), M2(4, 0)
+    O2 = M2(2, 0)
+    B2, D2 = M2(2, -1), M2(2, 2)
+    p.append(PL([A2, B2, C2, D2], close=True, w=2))
+    p.append(L(A2[0], A2[1], C2[0], C2[1], color=GRAY))
+    p.append(L(B2[0], B2[1], D2[0], D2[1], color=GRAY))
+    p.append(DOT(*O2))
+    p.append(T(A2[0] - 14, A2[1] + 4, "A", size=13))
+    p.append(T(C2[0] + 14, C2[1] + 4, "C", size=13))
+    p.append(T(B2[0] - 14, B2[1] + 4, "B", size=13))
+    p.append(T(D2[0] + 14, D2[1] + 4, "D", size=13))
+    p.append(T(O2[0] + 16, O2[1] - 6, "O", size=13))
+    p.append(T(400, 222, "图 2", size=12, color=GRAY))
+    return SVG(500, 240, p, "k 倍四边形示意")
+
+
+def f_bn027():
+    """bn027 直角梯形背景上的动点，AQPE 为平行四边形"""
+    p = []
+    def M(x, y):
+        return (56 + 14 * x, 262 - 14 * y)
+    A, B, C, D = M(0, 0), M(16, 0), M(16, 6), M(8, 6)
+    P, Q = M(6.4, 4.8), M(4, 0)
+    E = M(2.4, 4.8)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(RA(C[0], C[1], 0, 1, 9))
+    # 平行四边形 AQPE
+    p.append(PL([A, Q, P, E], close=True, dash="5 3", color=GRAY))
+    p.append(L(P[0], P[1], Q[0], Q[1], color=GRAY))
+    p.append(DOT(*P) + DOT(*Q) + DOT(*E))
+    p.append(T(A[0] - 14, A[1] + 16, "A", size=14))
+    p.append(T(B[0] + 6, B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 16, C[1] - 4, "C", size=14))
+    p.append(T(D[0] + 2, D[1] - 12, "D", size=14))
+    p.append(T(P[0] - 4, P[1] - 10, "P", size=14))
+    p.append(T(Q[0] - 4, Q[1] + 20, "Q", size=14))
+    p.append(T(E[0] - 14, E[1] + 4, "E", size=14))
+    return SVG(330, 300, p, "四边形 ABCD 与动点 P、Q，AQPE 为平行四边形")
+
+
+def f_bn028():
+    """bn028 正方形中 AE 与 BF 交于 G"""
+    p = []
+    def M(x, y):
+        return (66 + 50 * x, 246 - 50 * y)
+    A, B, C, D = M(0, 0), M(4, 0), M(4, 4), M(0, 4)
+    E, F = M(4, 1), M(3, 4)
+    G = M(64 / 17.0, 16 / 17.0)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(A[0], A[1], E[0], E[1], color=GRAY))
+    p.append(L(B[0], B[1], F[0], F[1], color=GRAY))
+    p.append(RA(G[0], G[1], 0.235, 0.972, 8))
+    p.append(DOT(*E) + DOT(*F) + DOT(*G))
+    p.append(T(A[0] - 14, A[1] + 16, "A", size=14))
+    p.append(T(B[0] + 6, B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 16, C[1] - 2, "C", size=14))
+    p.append(T(D[0] - 14, D[1] - 2, "D", size=14))
+    p.append(T(E[0] + 15, E[1] + 18, "E", size=14))
+    p.append(T(F[0] + 2, F[1] - 12, "F", size=14))
+    p.append(T(G[0] - 8, G[1] + 22, "G", size=14))
+    return SVG(340, 290, p, "正方形 ABCD 中 AE 与 BF 交于点 G")
+
+
+def f_bn032():
+    """bn032 矩形折叠，EF 为折痕（AC 的垂直平分线）"""
+    p = []
+    def M(x, y):
+        return (60 + 30 * x, 306 - 30 * y)
+    A, B, C, D = M(0, 0), M(6, 0), M(6, 8), M(0, 8)
+    E, F = M(0, 6.25), M(6, 1.75)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(A[0], A[1], C[0], C[1], dash="5 3", color=GRAY))
+    p.append(L(E[0], E[1], F[0], F[1], w=2.2))
+    p.append(RA(A[0], A[1], 1, 0, 8))
+    p.append(DOT(*E) + DOT(*F))
+    p.append(T(A[0] - 14, A[1] + 16, "A", size=14))
+    p.append(T(B[0] + 6, B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 16, C[1] - 2, "C", size=14))
+    p.append(T(D[0] - 14, D[1] - 2, "D", size=14))
+    p.append(T(E[0] - 16, E[1] + 4, "E", size=14))
+    p.append(T(F[0] + 16, F[1] + 4, "F", size=14))
+    return SVG(320, 340, p, "矩形 ABCD 沿 EF 折叠使 C 与 A 重合")
+
+
+def f_bn033():
+    """bn033 正方形中 ∠EAF = 45°"""
+    p = []
+    def M(x, y):
+        return (70 + 30 * x, 266 - 30 * y)
+    A, B, C, D = M(0, 0), M(6, 0), M(6, 6), M(0, 6)
+    E, F = M(6, 2), M(3, 6)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(A[0], A[1], E[0], E[1], color=GRAY))
+    p.append(L(A[0], A[1], F[0], F[1], color=GRAY))
+    p.append(L(E[0], E[1], F[0], F[1], w=2))
+    p.append(DOT(*E) + DOT(*F))
+    p.append(T(A[0] - 14, A[1] + 16, "A", size=14))
+    p.append(T(B[0] + 6, B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 16, C[1] - 2, "C", size=14))
+    p.append(T(D[0] - 14, D[1] - 2, "D", size=14))
+    p.append(T(E[0] + 16, E[1] + 6, "E", size=14))
+    p.append(T(F[0] + 2, F[1] - 12, "F", size=14))
+    p.append(T(A[0] + 46, A[1] - 22, "45°", size=12, color=GRAY))
+    return SVG(340, 310, p, "正方形 ABCD 中 E 在 BC、F 在 CD，∠EAF = 45°")
+
+
+# ============ 北师大九下压轴题（圆 / 反比例函数 / 解直角三角形） ============
+
+def f_bn9_001():
+    """9b001 半径 5 的圆，弦 AB = 8，点 C 在优弧上"""
+    p = []
+    cx, cy, r = 170, 130, 90          # 90px = 5 单位
+    A, B = (cx - 72, cy + 54), (cx + 72, cy + 54)   # 半弦 4、弦心距 3
+    C = (180, 45)
+    p.append(CI(cx, cy, r, w=None) if False else CI(cx, cy, r))
+    p.append(L(*A, *B, w=2))
+    p.append(L(cx, cy, *A, color=GRAY) + L(cx, cy, *B, color=GRAY))
+    p.append(L(cx, cy, cx, cy + 54, dash="4 3", color=GRAY))
+    p.append(L(*A, *C, color=GRAY) + L(*B, *C, color=GRAY))
+    p.append(RA(cx, cy + 54, 0, -1, 8))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*C))
+    p.append(T(cx - 14, cy + 5, "O", size=14))
+    p.append(T(A[0] - 12, A[1] + 18, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 2, C[1] - 10, "C", size=14))
+    return SVG(340, 250, p, "⊙O 中弦 AB = 8，点 C 在圆上")
+
+
+def f_bn9_004():
+    """9b004 堤坝梯形横断面"""
+    p = []
+    A, B, C, D = (40, 200), (139, 134), (183, 134), (315, 200)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(B[0], B[1], B[0], 200, dash="4 3", color=GRAY))
+    p.append(L(C[0], C[1], C[0], 200, dash="4 3", color=GRAY))
+    p.append(RA(B[0], 200, 1, 0, 8) + RA(C[0], 200, -1, 0, 8))
+    p.append(T(B[0] - 26, 166, "6 m", size=12, color=GRAY))
+    p.append(T((B[0] + C[0]) / 2, 126, "4 m", size=12))
+    p.append(T(A[0] - 14, A[1] + 18, "A", size=14))
+    p.append(T(B[0] - 6, B[1] - 10, "B", size=14))
+    p.append(T(C[0] + 8, C[1] - 10, "C", size=14))
+    p.append(T(D[0] + 14, D[1] + 18, "D", size=14))
+    p.append(T((A[0] + B[0]) / 2 - 10, 150, "i = 1 : 1.5", size=11, color=GRAY))
+    p.append(T((C[0] + D[0]) / 2 + 10, 150, "i = 1 : 2", size=11, color=GRAY))
+    return SVG(360, 230, p, "梯形堤坝横断面，坝顶 4 m，坝高 6 m")
+
+
+def f_bn9_007():
+    """9b007 直径 AB 与垂直于它的弦 CD"""
+    p = []
+    cx, cy, r = 160, 125, 80
+    A, B = (cx - 80, cy), (cx + 80, cy)
+    E = (cx - 48, cy)                  # AE = 2 单位（32px）
+    C, D = (E[0], cy - 64), (E[0], cy + 64)
+    p.append(CI(cx, cy, r))
+    p.append(L(*A, *B, w=2))
+    p.append(L(*C, *D, w=2))
+    p.append(L(cx, cy, *C, color=GRAY) + L(cx, cy, *D, color=GRAY))
+    p.append(RA(E[0], E[1], 1, 0, 8))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D) + DOT(*E))
+    p.append(T(cx - 6, cy - 10, "O", size=14))
+    p.append(T(A[0] - 12, A[1] + 6, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 6, "B", size=14))
+    p.append(T(C[0] - 14, C[1] - 2, "C", size=14))
+    p.append(T(D[0] - 14, D[1] + 12, "D", size=14))
+    p.append(T(E[0] - 12, E[1] + 16, "E", size=14))
+    return SVG(340, 250, p, "AB 是直径，弦 CD ⊥ AB 于 E")
+
+
+def f_bn9_009():
+    """9b009 圆外一点引两条切线"""
+    p = []
+    cx, cy, r = 150, 150, 80
+    P_ = (283, 150)
+    A, B = (198, 86), (198, 214)
+    p.append(CI(cx, cy, r))
+    p.append(L(*P_, *A, w=2) + L(*P_, *B, w=2))
+    p.append(L(cx, cy, *A, color=GRAY) + L(cx, cy, *B, color=GRAY))
+    p.append(L(cx, cy, *P_, dash="5 3", color=GRAY))
+    p.append(RA(A[0], A[1], 0.6, -0.8, 9) + RA(B[0], B[1], 0.6, 0.8, 9))
+    p.append(DOT(cx, cy) + DOT(*P_) + DOT(*A) + DOT(*B))
+    p.append(T(cx - 16, cy + 6, "O", size=14))
+    p.append(T(P_[0] + 10, P_[1] + 6, "P", size=14))
+    p.append(T(A[0] + 10, A[1] - 8, "A", size=14))
+    p.append(T(B[0] + 10, B[1] + 14, "B", size=14))
+    return SVG(340, 270, p, "PA、PB 切 ⊙O 于 A、B")
+
+
+def f_bn9_011():
+    """9b011 第二象限内双曲线上的点 A，AB ⊥ x 轴"""
+    p = []
+    ox, oy, sc = 160, 180, 26
+    p.append(L(30, oy, 300, oy, w=1.6) + L(ox, 40, ox, 300, w=1.6))
+    p.append(T(306, oy + 4, "x", size=12, anchor="start"))
+    p.append(T(ox - 6, 36, "y", size=12, anchor="end"))
+    p.append(T(ox - 12, oy + 16, "O", size=13))
+    # 第二象限分支（k = −10）
+    pts = [(ox - sc * x, oy - sc * (10.0 / x)) for x in [1.1 + 0.15 * i for i in range(28)]]
+    pts = [(x, y) for x, y in pts if y > 26]
+    p.append(PL(pts, w=2))
+    A = (ox - 2 * sc, oy - 5 * sc)
+    B = (A[0], oy)
+    p.append(L(*A, *B, w=2) + L(ox, oy, *A, w=2))
+    p.append(RA(B[0], B[1], 1, 0, 8))
+    p.append(DOT(*A) + DOT(*B))
+    p.append(T(A[0] - 14, A[1] - 4, "A", size=14))
+    p.append(T(B[0] - 4, B[1] + 18, "B", size=14))
+    return SVG(340, 320, p, "双曲线 y = k/x 上一点 A，AB ⊥ x 轴于 B")
+
+
+def f_bn9_019():
+    """9b019 仰角测楼高"""
+    p = []
+    A, B, C, D = (56, 210), (140, 210), (250, 210), (250, 56)
+    p.append(L(30, 210, 300, 210, w=1.6))
+    p.append(L(*C, *D, w=2.4))
+    p.append(L(*A, *D, dash="5 3", color=GRAY) + L(*B, *D, dash="5 3", color=GRAY))
+    p.append(RA(C[0], C[1], -1, 0, 9))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D))
+    p.append(T(A[0] - 8, A[1] + 18, "A", size=14))
+    p.append(T(B[0], B[1] + 18, "B", size=14))
+    p.append(T(C[0] - 2, C[1] + 18, "C", size=14))
+    p.append(T(D[0] + 16, D[1] + 4, "D", size=14))
+    p.append(T(A[0] + 26, A[1] - 8, "30°", size=11, color=GRAY))
+    p.append(T(B[0] + 26, B[1] - 8, "45°", size=11, color=GRAY))
+    p.append(T((A[0] + B[0]) / 2, 232, "20 m", size=12, color=GRAY))
+    return SVG(340, 250, p, "在 A、B 两处测楼顶 D 的仰角")
+
+
+def f_bn9_020():
+    """9b020 一次函数与反比例函数交于 A、B"""
+    p = []
+    ox, oy, sc = 130, 130, 22
+    p.append(L(26, oy, 320, oy, w=1.6) + L(ox, 24, ox, 300, w=1.6))
+    p.append(T(326, oy + 4, "x", size=12, anchor="start"))
+    p.append(T(ox - 6, 22, "y", size=12, anchor="end"))
+    p.append(T(ox - 12, oy + 16, "O", size=13))
+    # y = −6/x
+    pts = [(ox - sc * x, oy - sc * (6.0 / x)) for x in [0.55 + 0.12 * i for i in range(40)]]
+    pts = [(x, y) for x, y in pts if 22 < y < 306]
+    p.append(PL(pts, w=2))
+    pts2 = [(ox + sc * x, oy + sc * (6.0 / x)) for x in [0.55 + 0.12 * i for i in range(40)]]
+    pts2 = [(x, y) for x, y in pts2 if 22 < y < 306]
+    p.append(PL(pts2, w=2))
+    A = (ox - 2 * sc, oy - 3 * sc)
+    B = (ox + 6 * sc, oy + 1 * sc)
+    # 直线 y = −x/2 + 2
+    x1, x2 = -4.6, 9.5
+    p.append(L(ox + sc * x1, oy - sc * (-x1 / 2 + 2),
+               ox + sc * x2, oy - sc * (-x2 / 2 + 2), w=2))
+    p.append(DOT(*A) + DOT(*B))
+    p.append(T(A[0] - 12, A[1] - 8, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 12, "B", size=14))
+    return SVG(340, 320, p, "直线与双曲线交于 A、B 两点")
+
+
+def f_bn9_021():
+    """9b021 AC 平分 ∠DAB，DC 为切线"""
+    p = []
+    cx, cy, r = 160, 130, 75
+    A, B = (cx - r, cy), (cx + r, cy)
+    C = (139, 58)
+    D = (70, 78)
+    p.append(CI(cx, cy, r))
+    p.append(L(*A, *B, w=2))
+    p.append(L(*A, *C, w=2))
+    p.append(L(*C, *D, w=2.2))
+    p.append(L(cx, cy, *C, dash="4 3", color=GRAY))
+    p.append(L(*A, *D, color=GRAY))
+    p.append(RA(C[0], C[1], 0.28, 0.96, 9) + RA(D[0], D[1], -0.28, -0.96, 9))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D))
+    p.append(T(cx - 4, cy + 20, "O", size=14))
+    p.append(T(A[0] - 12, A[1] + 18, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 6, "B", size=14))
+    p.append(T(C[0] + 14, C[1] - 2, "C", size=14))
+    p.append(T(D[0] - 14, D[1] - 8, "D", size=14))
+    return SVG(330, 250, p, "AC 平分 ∠DAB，DC 切 ⊙O 于 C")
+
+
+def f_bn9_022():
+    """9b022 等腰三角形内接半圆，DE ⊥ AC"""
+    p = []
+    A, B, C = (180, 60), (60, 220), (300, 220)
+    O_ = (120, 140)
+    D = (180, 220)
+    E = (257, 162)
+    p.append(PL([A, B, C], close=True, w=2))
+    p.append(CI(*O_, 100))
+    p.append(L(*A, *D, color=GRAY))
+    p.append(L(*D, *E, w=2.2))
+    p.append(L(*O_, *D, dash="4 3", color=GRAY))
+    p.append(RA(D[0], D[1], 0.8, -0.6, 9))
+    p.append(RA(E[0], E[1], -0.6, -0.8, 9))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D) + DOT(*E) + DOT(*O_))
+    p.append(T(A[0], A[1] - 10, "A", size=14))
+    p.append(T(B[0] - 14, B[1] + 6, "B", size=14))
+    p.append(T(C[0] + 14, C[1] + 6, "C", size=14))
+    p.append(T(D[0] + 4, D[1] + 20, "D", size=14))
+    p.append(T(E[0] + 16, E[1] + 2, "E", size=14))
+    p.append(T(O_[0] - 14, O_[1] - 6, "O", size=14))
+    return SVG(350, 260, p, "以 AB 为直径的 ⊙O 交 BC 于 D，DE ⊥ AC")
+
+
+def f_bn9_023():
+    """9b023 半径 10，弦 10√3，圆心角 120°"""
+    p = []
+    cx, cy, r = 170, 140, 95
+    A, B = (87.7, 187.5), (252.3, 187.5)
+    H = (170, 187.5)
+    p.append(CI(cx, cy, r))
+    # 弓形（劣弧与弦之间）浅色填充，比画一段重复的弧线清楚
+    seg = [P(210 + 1.0 * i, r, cx, cy) for i in range(121)]
+    p.append(PL([A] + seg + [B], close=True, fill="#f0efec", color="none", w=0))
+    p.append(L(*A, *B, w=2.2))
+    p.append(L(cx, cy, *A, color=GRAY) + L(cx, cy, *B, color=GRAY))
+    p.append(L(cx, cy, *H, dash="4 3", color=GRAY))
+    p.append(RA(H[0], H[1], 0, -1, 8))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*H))
+    p.append(T(cx - 6, cy - 12, "O", size=14))
+    p.append(T(A[0] - 12, A[1] + 6, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 6, "B", size=14))
+    p.append(T(H[0] + 14, H[1] + 6, "H", size=14))
+    p.append(T(cx, cy + 34, "120°", size=11, color=GRAY))
+    return SVG(340, 230, p, "⊙O 中弦 AB 所对的圆心角为 120°")
+
+
+def f_bn9_024():
+    """9b024 三级台阶与坡板"""
+    p = []
+    # 台阶轮廓：三级踏面 + 三级踢面
+    pts = [(50, 250), (110, 250), (110, 220), (170, 220), (170, 190), (230, 190), (230, 160)]
+    p.append(PL(pts, w=2))
+    # 坡板：从第一级前沿铺到第三级后沿
+    p.append(L(110, 250, 230, 160, w=2.6))
+    # 尺寸标注
+    p.append(L(110, 268, 230, 268, color=GRAY))
+    p.append(T(170, 284, "水平 90 cm", size=11, color=GRAY))
+    p.append(L(248, 250, 248, 160, color=GRAY))
+    p.append(T(258, 208, "45", size=11, color=GRAY, anchor="start"))
+    p.append(T(266, 222, "cm", size=11, color=GRAY, anchor="start"))
+    p.append(T(96, 214, "15", size=10, color=GRAY, anchor="end"))
+    p.append(T(156, 184, "15", size=10, color=GRAY, anchor="end"))
+    p.append(DOT(110, 250) + DOT(230, 160))
+    return SVG(320, 300, p, "三级台阶与铺在上面的坡板")
+
+
+def f_bn9_025():
+    """9b025 v = 480/t 图象"""
+    p = []
+    ox, oy = 60, 240
+    p.append(L(ox, oy, 310, oy, w=1.6) + L(ox, 40, ox, oy, w=1.6))
+    p.append(T(316, oy + 4, "t/h", size=12, anchor="start"))
+    p.append(T(ox - 8, 36, "v", size=12, anchor="end"))
+    p.append(T(ox - 10, oy + 16, "O", size=13))
+    pts = [(ox + 2.2 * t, oy - 0.9 * (480.0 / t)) for t in [2.6 + 0.2 * i for i in range(60)]]
+    pts = [(x, y) for x, y in pts if 48 < y < oy]
+    p.append(PL(pts, w=2))
+    # 辅助虚线：t = 6 时 v = 80
+    p.append(L(ox + 2.2 * 6, oy, ox + 2.2 * 6, oy - 0.9 * 80, dash="4 3", color=GRAY))
+    p.append(L(ox, oy - 0.9 * 80, ox + 2.2 * 6, oy - 0.9 * 80, dash="4 3", color=GRAY))
+    p.append(DOT(ox + 2.2 * 6, oy - 0.9 * 80))
+    p.append(T(ox + 2.2 * 6, oy + 16, "6", size=12, color=GRAY))
+    p.append(T(ox - 16, oy - 0.9 * 80 + 4, "80", size=12, color=GRAY))
+    return SVG(340, 270, p, "v 关于 t 的反比例函数图象")
+
+
+def f_bn9_026():
+    """9b026 圆内接四边形 ABCD，PD 为切线"""
+    p = []
+    cx, cy, r = 150, 110, 60
+    A, B = (90, 110), (210, 110)
+    D = (120, 58)
+    C = (180, 58)
+    P_ = (30, 110)
+    p.append(CI(cx, cy, r))
+    p.append(L(*A, *B, w=2))
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(*P_, *D, w=2.2))
+    p.append(L(cx, cy, *D, dash="4 3", color=GRAY))
+    p.append(RA(D[0], D[1], 0.5, 0.87, 8))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D) + DOT(*P_))
+    p.append(T(cx - 4, cy + 18, "O", size=13))
+    p.append(T(A[0] - 12, A[1] + 16, "A", size=13))
+    p.append(T(B[0] + 12, B[1] + 16, "B", size=13))
+    p.append(T(C[0] + 12, C[1] - 6, "C", size=13))
+    p.append(T(D[0] - 12, D[1] - 6, "D", size=13))
+    p.append(T(P_[0] - 12, P_[1] + 6, "P", size=13))
+    return SVG(300, 200, p, "四边形 ABCD 内接于 ⊙O，PD 切 ⊙O 于 D")
+
+
+def f_bn9_027():
+    """9b027 圆锥与它的侧面展开图"""
+    p = []
+    # 左：圆锥
+    apex = (90, 50)
+    left, right = (40, 170), (140, 170)
+    p.append(L(*apex, *left, w=2) + L(*apex, *right, w=2))
+    p.append('<ellipse cx="90" cy="170" rx="50" ry="13"/>')
+    p.append(L(90, 170, 140, 170, dash="4 3", color=GRAY))
+    p.append(T(90, 40, "9", size=12))
+    p.append(T(112, 178, "3", size=12, color=GRAY))
+    # 右：展开扇形（用采样点画，避免 SVG 弧线方向标志出错）
+    cx, cy, R = 250, 200, 90
+    arc = [P(60 + 1.0 * i, R, cx, cy) for i in range(121)]
+    p.append(PL([(cx, cy)] + arc, close=True, w=2))
+    p.append(L(cx, cy, cx + R * 0.5, cy - R * 0.866, dash="4 3", color=GRAY))
+    p.append(T(cx + 34, cy - 16, "120°", size=11, color=GRAY))
+    p.append(T(cx + 24, cy - 62, "9", size=12))
+    p.append(T(cx - 46, cy - 30, "9", size=12))
+    return SVG(370, 230, p, "圆锥及其侧面展开图（圆心角 120°）")
+
+
+def f_bn9_028():
+    """9b028 直径 AB，弦 AC，∠ACB 的平分线交圆于 D"""
+    p = []
+    cx, cy, r = 170, 110, 90
+    A, B = (80, 110), (260, 110)
+    C = (144.8, 23.6)
+    D = (170, 200)
+    p.append(CI(cx, cy, r))
+    p.append(L(*A, *B, w=2))
+    p.append(L(*A, *C, w=2) + L(*B, *C, w=2))
+    p.append(L(*C, *D, w=2.2))
+    p.append(L(*A, *D, color=GRAY) + L(*B, *D, color=GRAY))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D))
+    p.append(T(cx - 4, cy + 20, "O", size=14))
+    p.append(T(A[0] - 12, A[1] + 18, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 18, "B", size=14))
+    p.append(T(C[0] - 4, C[1] - 10, "C", size=14))
+    p.append(T(D[0] + 4, D[1] + 18, "D", size=14))
+    return SVG(340, 230, p, "AB 是直径，CD 平分 ∠ACB")
+
+
+def f_bn9_029():
+    """9b029 方向角与暗礁判断"""
+    p = []
+    A, B = (56, 210), (216, 210)
+    C = (296, 72)
+    H = (296, 210)
+    p.append(L(30, 210, 320, 210, w=1.6))
+    p.append(L(316, 210, 308, 206, color=GRAY) + L(316, 210, 308, 214, color=GRAY))
+    p.append(L(*A, *C, w=2) + L(*B, *C, w=2))
+    p.append(L(*C, *H, dash="4 3", color=GRAY))
+    p.append(RA(H[0], H[1], -1, 0, 8))
+    # 指北线
+    p.append(L(A[0], A[1], A[0], A[1] - 90, dash="3 3", color=GRAY))
+    p.append(L(A[0], A[1] - 96, A[0], A[1] - 84, color=GRAY))
+    p.append(T(A[0], A[1] - 104, "北", size=11, color=GRAY))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C))
+    p.append(T(A[0] - 14, A[1] + 18, "A", size=14))
+    p.append(T(B[0], B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 4, C[1] - 12, "C", size=14))
+    p.append(T(150, 232, "40 海里", size=11, color=GRAY))
+    p.append(T(A[0] + 12, A[1] - 44, "60°", size=11, color=GRAY))
+    p.append(T(B[0] + 4, B[1] - 34, "30°", size=11, color=GRAY))
+    return SVG(350, 260, p, "渔船由 A 向正东航行到 B，测灯塔 C 的方向")
+
+
+def f_bn9_030():
+    """9b030 直径 AB，BD 为切线，CE ⊥ AB"""
+    p = []
+    A, B = (50, 220), (275, 220)
+    C, D = (194, 112), (275, 51)
+    E = (194, 220)
+    cx = (A[0] + B[0]) / 2.0
+    p.append(CI(cx, 220, (B[0] - A[0]) / 2.0))
+    p.append(L(*A, *B, w=2))
+    p.append(L(*A, *D, w=2))
+    p.append(L(*B, *D, w=2.2))
+    p.append(L(*C, *E, w=2))
+    p.append(RA(B[0], B[1], -1, 0, 9))
+    p.append(RA(E[0], E[1], 0, -1, 8))
+    p.append(DOT(cx, 220) + DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D) + DOT(*E))
+    p.append(T(cx - 12, 246, "O", size=13, anchor="end"))
+    p.append(T(A[0] - 12, A[1] + 6, "A", size=14))
+    p.append(T(B[0] + 10, B[1] + 6, "B", size=14))
+    p.append(T(C[0] - 16, C[1] - 4, "C", size=14))
+    p.append(T(D[0] + 14, D[1] + 4, "D", size=14))
+    p.append(T(E[0] - 12, E[1] + 18, "E", size=14))
+    return SVG(340, 270, p, "AB 是直径，BD 为切线，CE ⊥ AB")
+
+
+def f_bn9_031():
+    """9b031 矩形内动点 P 满足 AP = 4（隐圆）"""
+    p = []
+    A, B, C, D = (60, 210), (240, 210), (240, 50), (60, 50)   # 6×8 按 30px/单位 → 180×160
+    p.append(PL([A, B, C, D], close=True, w=2))
+    # 以 A 为圆心、4（120px）为半径的圆弧（矩形内部分）
+    arc = [P(0 + 1.0 * i, 120, A[0], A[1]) for i in range(91)]
+    p.append(PL(arc, color=GRAY, dash="5 3"))
+    P_ = (A[0] + 120 * 0.6, A[1] - 120 * 0.8)   # 弧上一点
+    p.append(L(*A, *C, dash="4 3", color=GRAY))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D) + DOT(*P_))
+    p.append(T(A[0] - 14, A[1] + 18, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 18, "B", size=14))
+    p.append(T(C[0] + 12, C[1] - 4, "C", size=14))
+    p.append(T(D[0] - 12, D[1] - 4, "D", size=14))
+    p.append(T(P_[0] - 14, P_[1] - 8, "P", size=14))
+    return SVG(300, 250, p, "矩形 ABCD 内动点 P 满足 AP = 4")
+
+
+def f_bn9_032():
+    """9b032 以 AB 为直径的圆，C、P 在圆上"""
+    p = []
+    A, B = (70, 220), (270, 220)
+    cx, cy, r = 170, 220, 100
+    C = (170 - 100 * 0.6, 220 - 100 * 0.8)     # 圆上一点，∠ACB = 90°
+    P_ = (170 + 100 * 0.6, 220 - 100 * 0.8)
+    p.append(CI(cx, cy, r))
+    p.append(L(*A, *B, w=2))
+    p.append(L(*A, *C, w=2) + L(*B, *C, w=2))
+    p.append(L(*A, *P_, color=GRAY) + L(*B, *P_, color=GRAY))
+    p.append(L(*C, *P_, dash="4 3", color=GRAY))
+    p.append(DOT(cx, cy) + DOT(*A) + DOT(*B) + DOT(*C) + DOT(*P_))
+    p.append(T(cx - 2, cy + 20, "M", size=13))
+    p.append(T(A[0] - 14, A[1] + 6, "A", size=14))
+    p.append(T(B[0] + 12, B[1] + 6, "B", size=14))
+    p.append(T(C[0] - 14, C[1] - 6, "C", size=14))
+    p.append(T(P_[0] + 14, P_[1] - 6, "P", size=14))
+    return SVG(340, 260, p, "以 AB 为直径的圆，C、P 都在圆上")
+
+
+def f_bn9_033():
+    """9b033 双曲线上的点 A，矩形 OBAC，D 为 AC 中点"""
+    p = []
+    ox, oy, sc = 80, 240, 42
+    p.append(L(40, oy, 300, oy, w=1.6) + L(ox, 40, ox, oy, w=1.6))
+    p.append(T(306, oy + 4, "x", size=12, anchor="start"))
+    p.append(T(ox - 8, 36, "y", size=12, anchor="end"))
+    p.append(T(ox - 10, oy + 16, "O", size=13))
+    pts = [(ox + sc * x, oy - sc * (6.0 / x)) for x in [0.7 + 0.12 * i for i in range(34)]]
+    pts = [(x, y) for x, y in pts if 34 < y < oy]
+    p.append(PL(pts, w=2))
+    A = (ox + 2 * sc, oy - 3 * sc)
+    B, C = (A[0], oy), (ox, A[1])
+    D = ((A[0] + C[0]) / 2.0, A[1])
+    p.append(PL([(ox, oy), B, A, C], close=True, color=GRAY))
+    p.append(L(ox, oy, *B, w=2) + L(ox, oy, *D, w=2))
+    p.append(L(*D, *B, w=2))
+    p.append(RA(ox, oy, 1, 0, 8))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D))
+    p.append(T(A[0] + 12, A[1] - 8, "A", size=13))
+    p.append(T(B[0] + 4, B[1] + 18, "B", size=13))
+    p.append(T(C[0] - 12, C[1] - 4, "C", size=13))
+    p.append(T(D[0] - 6, D[1] - 10, "D", size=13))
+    return SVG(320, 280, p, "双曲线上一点 A 与矩形 OBAC，D 为 AC 中点")
+
+
+# ---- 补图：题干写了「如图」但原来没图的四道九上题 ----
+
+def f_bn013():
+    """bn013 正方形四角剪去全等等腰直角三角形，剩下正八边形"""
+    p = []
+    x0, y0, s = 60, 30, 160
+    x1, y1 = x0 + s, y0 + s
+    d = s * (1 - 1 / math.sqrt(2))      # 每个角沿两边各剪掉的长度
+    # 原正方形用浅灰虚线保留，让人看出「剪掉」的是四个角
+    p.append(PL([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], close=True, dash="4 4", color=GRAY))
+    oct_pts = [
+        (x0 + d, y0), (x1 - d, y0), (x1, y0 + d), (x1, y1 - d),
+        (x1 - d, y1), (x0 + d, y1), (x0, y1 - d), (x0, y0 + d),
+    ]
+    p.append(PL(oct_pts, close=True, w=2))
+    p.append(T(x0 - 14, y0 - 6, "A", size=13))
+    p.append(T(x1 + 14, y0 - 6, "B", size=13))
+    p.append(T(x1 + 14, y1 + 16, "C", size=13))
+    p.append(T(x0 - 14, y1 + 16, "D", size=13))
+    return SVG(280, 220, p, "正方形四角剪去全等三角形后剩下的正八边形")
+
+
+def f_bn026():
+    """bn026 平行四边形 ABCD，E、F 在 BD 的延长线上且 DE = BF"""
+    p = []
+    A, B = (50, 60), (190, 60)
+    D, C = (100, 170), (240, 170)
+    O = ((A[0] + C[0]) / 2.0, (A[1] + C[1]) / 2.0)
+    E = (D[0] + 0.38 * (D[0] - B[0]), D[1] + 0.38 * (D[1] - B[1]))
+    F = (B[0] + 0.38 * (B[0] - D[0]), B[1] + 0.38 * (B[1] - D[1]))
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(*E, *F, w=1.5))                 # BD 及其两端延长线
+    p.append(L(*A, *C, w=1.5))
+    p.append(L(*A, *E, w=1.5) + L(*C, *F, w=1.5))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C) + DOT(*D) + DOT(*O) + DOT(*E) + DOT(*F))
+    p.append(T(A[0] - 12, A[1] - 4, "A", size=13))
+    p.append(T(B[0] - 13, B[1] - 5, "B", size=13))   # 右边是 B→F 的线，标签放左侧
+    p.append(T(C[0] + 12, C[1] + 6, "C", size=13))
+    p.append(T(D[0] + 12, D[1] + 12, "D", size=13))
+    p.append(T(O[0] - 2, O[1] - 13, "O", size=13))   # 两条对角线夹出的空当里，不压线
+    p.append(T(E[0] - 10, E[1] + 14, "E", size=13))
+    p.append(T(F[0] + 10, F[1] + 4, "F", size=13))
+    return SVG(300, 240, p, "平行四边形 ABCD 与 BD 延长线上的 E、F")
+
+
+def f_bn029():
+    """bn029 四边形 ABCD 各边中点 E、F、G、H 连成中点四边形"""
+    p = []
+    A, B, C, D = (50, 40), (200, 30), (250, 140), (90, 175)
+    E = ((A[0] + B[0]) / 2.0, (A[1] + B[1]) / 2.0)
+    F = ((B[0] + C[0]) / 2.0, (B[1] + C[1]) / 2.0)
+    G = ((C[0] + D[0]) / 2.0, (C[1] + D[1]) / 2.0)
+    H = ((D[0] + A[0]) / 2.0, (D[1] + A[1]) / 2.0)
+    p.append(PL([A, B, C, D], close=True, w=2))
+    p.append(L(*A, *C, dash="5 4", color=GRAY) + L(*B, *D, dash="5 4", color=GRAY))
+    p.append(PL([E, F, G, H], close=True, w=2, color=GRAY))
+    for pt in (A, B, C, D):
+        p.append(DOT(*pt))
+    for pt in (E, F, G, H):
+        p.append(DOT(*pt, r=2.0))
+    p.append(T(A[0] - 12, A[1] + 2, "A", size=13))
+    p.append(T(B[0] + 12, B[1] + 2, "B", size=13))
+    p.append(T(C[0] + 12, C[1] + 8, "C", size=13))
+    p.append(T(D[0] - 10, D[1] + 14, "D", size=13))
+    p.append(T(E[0], E[1] - 10, "E", size=13))
+    p.append(T(F[0] + 12, F[1] + 2, "F", size=13))
+    p.append(T(G[0] + 6, G[1] + 16, "G", size=13))
+    p.append(T(H[0] - 14, H[1] + 2, "H", size=13))
+    return SVG(300, 220, p, "四边形 ABCD 与各边中点连成的中点四边形")
+
+
+def f_bn030():
+    """bn030 黄金分割点 C，正方形 ACDE 与等面积矩形 BCFG"""
+    p = []
+    ax, ay, ab = 50, 250, 200
+    # AC/AB = (√5−1)/2
+    ac = ab * (math.sqrt(5) - 1) / 2.0
+    A, B, C = (ax, ay), (ax + ab, ay), (ax + ac, ay)
+    # 矩形高 = AC² / BC，正好等于 AB
+    h = ac * ac / (ab - ac)
+    E, D = (A[0], ay - ac), (C[0], ay - ac)
+    G, F = (B[0], ay - h), (C[0], ay - h)
+    p.append(PL([A, C, D, E], close=True, w=2))
+    p.append(PL([C, B, G, F], close=True, w=2))
+    p.append(L(*A, *B, w=2))
+    p.append(DOT(*A) + DOT(*B) + DOT(*C))
+    p.append(T(A[0] - 12, A[1] + 16, "A", size=13))
+    p.append(T(B[0] + 12, B[1] + 16, "B", size=13))
+    p.append(T(C[0], C[1] + 18, "C", size=13))
+    p.append(T(E[0] - 12, E[1] + 4, "E", size=13))
+    p.append(T(D[0] + 14, D[1] + 4, "D", size=13))
+    p.append(T(F[0] + 14, F[1] + 4, "F", size=13))
+    p.append(T(G[0] + 14, G[1] + 4, "G", size=13))
+    return SVG(300, 290, p, "黄金分割点 C，正方形 ACDE 与等面积矩形 BCFG")
+
+
 FIGS = {
     "sh_228_2": f_fence_wall,
     "sh_236_2": f_arch_bridge,
@@ -534,6 +1247,39 @@ FIGS = {
     "sh_279_1": f_elevation,
     "sh_280_1": f_slope,
     "sh_289_1": f_spinner,
+    # ---- 北师大九上提高题 ----
+    "bn_003": f_bn003,
+    "bn_013": f_bn013,
+    "bn_023": f_bn023,
+    "bn_024": f_bn024,
+    "bn_026": f_bn026,
+    "bn_027": f_bn027,
+    "bn_028": f_bn028,
+    "bn_029": f_bn029,
+    "bn_030": f_bn030,
+    "bn_032": f_bn032,
+    "bn_033": f_bn033,
+    # ---- 北师大九下提高题 ----
+    "bn9_001": f_bn9_001,
+    "bn9_004": f_bn9_004,
+    "bn9_007": f_bn9_007,
+    "bn9_009": f_bn9_009,
+    "bn9_011": f_bn9_011,
+    "bn9_019": f_bn9_019,
+    "bn9_020": f_bn9_020,
+    "bn9_021": f_bn9_021,
+    "bn9_022": f_bn9_022,
+    "bn9_023": f_bn9_023,
+    "bn9_024": f_bn9_024,
+    "bn9_025": f_bn9_025,
+    "bn9_026": f_bn9_026,
+    "bn9_027": f_bn9_027,
+    "bn9_028": f_bn9_028,
+    "bn9_029": f_bn9_029,
+    "bn9_030": f_bn9_030,
+    "bn9_031": f_bn9_031,
+    "bn9_032": f_bn9_032,
+    "bn9_033": f_bn9_033,
 }
 
 

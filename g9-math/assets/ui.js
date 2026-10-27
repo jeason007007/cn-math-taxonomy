@@ -60,13 +60,30 @@
     { href: 'teach.html', label: '讲解', match: ['teach.html'] }
   ];
 
+  /* 学科：靠路径判断。math/ 和 physics/ 各放一份 ui.js，两份内容保持一致，
+     只有这里按当前目录自动认出是哪一科。 */
+  var SUBJ = (function () {
+    try {
+      return /[/\\]physics[/\\]/.test(location.pathname) ? 'physics' : 'math';
+    } catch (e) {
+      return 'math';
+    }
+  })();
+  var SUBJ_CN = { math: '数学', physics: '物理' };
+  var SUBJ_HREF = { math: '../math/index.html', physics: '../physics/index.html' };
+
   function nav(current) {
     var items = NAV.map(function (n) {
       var on = n.href === current ? ' on' : '';
       return '<a class="nav-item' + on + '" href="' + n.href + '">' + n.label + '</a>';
     }).join('');
+    var sw = '<span class="nav-subj">' +
+      ['math', 'physics'].map(function (k) {
+        return '<a class="' + (k === SUBJ ? 'on' : '') + '" href="' + SUBJ_HREF[k] + '">' +
+          SUBJ_CN[k] + '</a>';
+      }).join('') + '</span>';
     return '<div class="nav no-print"><div class="nav-inner">' +
-      '<span class="nav-brand">初三数学 · 盲点诊断</span>' + items +
+      '<span class="nav-brand">初三' + SUBJ_CN[SUBJ] + ' · 盲点诊断</span>' + items + sw +
       '</div></div>';
   }
 
@@ -75,7 +92,9 @@
       var on = (t.match || [t.href]).indexOf(current) !== -1 ? ' on' : '';
       return '<a class="' + on.trim() + '" href="' + t.href + '">' + t.label + '</a>';
     }).join('');
-    return '<div class="m-tabbar no-print">' + items + '</div>';
+    var other = SUBJ === 'math' ? 'physics' : 'math';
+    return '<div class="m-tabbar no-print">' + items +
+      '<a class="subj" href="' + SUBJ_HREF[other] + '">' + SUBJ_CN[other] + '</a></div>';
   }
 
   function mountNav(current) {
@@ -134,7 +153,10 @@
 
   /* 试卷上的完整题目 */
   function questionHTML(q, no) {
-    var prompt = esc(q.prompt) + (q.type === 'choice' ? '　（　　）' : '');
+    /* 解答题的题面用 \n 分行（小问、素材、条件各占一行），
+       这里必须转成 <br>，否则整道题挤成一大段，读起来很费劲。 */
+    var prompt = esc(q.prompt).replace(/\n/g, '<br>') +
+      (q.type === 'choice' ? '　（　　）' : '');
     return '<div class="q" data-qid="' + esc(q.id) + '">' +
       '<span class="q-no">' + no + '.</span>' +
       '<p class="q-prompt">' + prompt + '</p>' +

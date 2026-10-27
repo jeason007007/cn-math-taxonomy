@@ -12,7 +12,7 @@
   <p class="sub">选好范围和题量，生成一张 A4 试卷。学生卷和答案卷分开打印，答案卷另起一页。</p>
 
   <div class="card no-print" id="cfgCard">
-    <label class="field">
+    <label class="field" id="scopeField">
       <span class="lbl">范围</span>
       <div class="opt-group" id="scopeOpts">
         <div class="opt on" data-scope="all">全册（九上 + 九下）</div>
@@ -27,12 +27,25 @@
       <div id="chapterList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
     </div>
 
+    <!-- 北师大档专用：按教材章节选范围，不选就是全出 -->
+    <div id="bnPicker" style="display:none;margin-bottom:14px">
+      <div class="lbl small" id="bnPickerTitle" style="color:var(--ink-2);margin-bottom:8px">
+        北师大九上六章 · 不选就是六章全出
+      </div>
+      <div id="bnList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      <details style="margin-top:10px">
+        <summary class="small muted" style="cursor:pointer" id="bnOutlineSum">对照教材提纲（2026 秋版目录）</summary>
+        <div id="bnOutline" class="small muted" style="margin-top:8px;line-height:1.85"></div>
+      </details>
+    </div>
+
     <label class="field">
       <span class="lbl">题量</span>
       <div class="opt-group" id="countOpts">
         <div class="opt" data-count="12">12 题</div>
         <div class="opt" data-count="20">20 题</div>
-        <div class="opt on" data-count="25">25 题</div>
+        <div class="opt on" data-count="24">24 题</div>
+        <div class="opt" data-count="25">25 题</div>
       </div>
       <div class="small muted" style="margin-top:6px">含解答题在内，选择填空占大部分。</div>
     </label>
@@ -42,8 +55,9 @@
       <div class="opt-group" id="shortOpts">
         <div class="opt" data-short="0">不含</div>
         <div class="opt" data-short="2">2 道</div>
-        <div class="opt on" data-short="3">3 道</div>
+        <div class="opt" data-short="3">3 道</div>
         <div class="opt" data-short="5">5 道</div>
+        <div class="opt on" data-short="8">8 道</div>
       </div>
       <div class="small muted" id="shortHint" style="margin-top:6px"></div>
     </label>
@@ -54,7 +68,9 @@
         <div class="opt" data-diff="easy">基础偏多</div>
         <div class="opt" data-diff="even">均衡</div>
         <div class="opt" data-diff="hard">提高偏多</div>
-        <div class="opt on" data-diff="sd">山东中考（偏难）</div>
+        <div class="opt" data-diff="sd">山东中考（偏难）</div>
+        <div class="opt on" data-diff="zz">北师大九上 · 压轴</div>
+        <div class="opt" data-diff="bn2">北师大九下 · 压轴</div>
       </div>
       <div class="small muted" id="diffHint" style="margin-top:6px"></div>
     </label>
@@ -112,24 +128,35 @@
   var cfg = {
     scope: 'all',
     chapters: [],
-    count: 25,
-    shortCount: 3,
-    diff: 'sd',
-    mode: 'normal'
+    count: 24,
+    shortCount: 8,
+    diff: 'zz',
+    mode: 'normal',
+    bnUnits: []
   };
   var RATIO = {
     easy: { basic: 0.5, standard: 0.35, advanced: 0.15 },
     even: { basic: 0.4, standard: 0.4, advanced: 0.2 },
     hard: { basic: 0.25, standard: 0.45, advanced: 0.3 },
-    sd: { basic: 0.2, standard: 0.45, advanced: 0.35 }
+    sd: { basic: 0.2, standard: 0.45, advanced: 0.35 },
+    /* 压轴档不用比例分配：只从 zz 池抽，槽位全是 zz。
+       九下同一套逻辑，只是换成 bn2 那一批归位数据。 */
+    zz: { basic: 0, standard: 0, advanced: 0, zz: 1 },
+    bn2: { basic: 0, standard: 0, advanced: 0, zz: 1 }
   };
   var DIFF_HINT = {
     easy: '基础题占一半，先建立信心。',
     even: '基础、标准、提高各占一部分。',
     hard: '提高题占三成，计算量和综合度都上一个台阶。',
-    sd: '按山东中考风格：提高题占三成半，应用题、推理题、建模题加权，计算量偏大。'
+    sd: '按山东中考风格：提高题占三成半，应用题、推理题、建模题加权，计算量偏大。',
+    zz: '北师大版（2026 新版）九上六章，只出压轴级：新定义、动点最值、多结论辨析、项目式建模。卷面 10 选择 + 6 填空 + 8 解答。',
+    bn2: '北师大版九下三章（直角三角形边角关系 / 反比例函数 / 圆），只出压轴级：隐圆最值、圆的综合证明、反比例与几何综合、非直角三角形建模。卷面 10 选择 + 6 填空 + 8 解答。'
   };
+  /* 两档卷面形状一样：10 选择 + 6 填空 + 8 解答 = 24 题、120 分 */
+  var BN_SHAPE = { choice: 10, numeric: 6, short: 8, count: 24 };
   var lastPaper = null;
+  /* 当前北师大档是九上（bn）还是九下（bn2） */
+  var bnTier = 'bn';
 
   /* ---- 章节选择器 ---- */
   var chapters = E.data.chapters;
@@ -146,6 +173,65 @@
     var ch = t.getAttribute('data-ch');
     var i = cfg.chapters.indexOf(ch);
     if (i === -1) cfg.chapters.push(ch); else cfg.chapters.splice(i, 1);
+  });
+
+  /* ---- 北师大章节选择器 + 教材提纲 ----
+     题库是按沪科版编的，压轴档要按北师大教材出，就得让人看见「教材怎么分章」，
+     顺便能只挑一章来练。不勾选 = 全出。
+     九上六章和九下三章共用这一块，切难度档时整块重建。 */
+  var CN_NO = ['', '一', '二', '三', '四', '五', '六'];
+
+  function bnChapterList(tier) {
+    return tier === 'bn2' ? E.bn2Chapters() : E.bnChapters();
+  }
+
+  /* 每章底下挂了多少道 zz 题，显示在章名后面 */
+  function bnCounts(tier) {
+    var key = (tier === 'bn2') ? 'bn2Unit' : 'bnUnit';
+    var out = {};
+    E.data.questions.forEach(function (q) {
+      if (q.difficulty !== 'zz') return;
+      var t = E.topic(q.topicId);
+      if (t && t[key]) out[t[key]] = (out[t[key]] || 0) + 1;
+    });
+    return out;
+  }
+
+  function renderBnPicker(tier) {
+    var chs = bnChapterList(tier);
+    var cnt = bnCounts(tier);
+    var up = (tier !== 'bn2');
+    U.el('bnPickerTitle').textContent = up
+      ? '北师大九上六章 · 不选就是六章全出'
+      : '北师大九下三章 · 不选就是三章全出';
+    U.el('bnOutlineSum').textContent = up
+      ? '对照教材提纲（2026 秋版目录）'
+      : '对照教材提纲（北师大 2024 版九下目录）';
+
+    U.el('bnList').innerHTML = chs.map(function (c) {
+      var n = cnt[c.no] || 0;
+      return '<div class="opt" data-bn="' + c.no + '" style="font-size:13px;padding:6px 12px">' +
+        '第' + CN_NO[c.no] + '章 ' + U.esc(c.title) +
+        ' <span class="muted">(' + n + ')</span></div>';
+    }).join('');
+
+    U.el('bnOutline').innerHTML = chs.map(function (c) {
+      var secs = c.sections.map(function (s) {
+        /* 一节都没挂题的（比如纯引入的 1.1）标个灰点，省得以为漏了 */
+        var dot = s.topics && s.topics.length ? '' : ' <span style="opacity:.5">· 暂无题</span>';
+        return U.esc(s.no + ' ' + s.title) + dot;
+      }).join('　');
+      return '<div style="margin-bottom:6px"><b>第' + CN_NO[c.no] + '章 ' + U.esc(c.title) + '</b><br>' + secs + '</div>';
+    }).join('');
+  }
+
+  U.el('bnList').addEventListener('click', function (e) {
+    var t = e.target.closest('.opt');
+    if (!t) return;
+    t.classList.toggle('on');
+    var u = parseInt(t.getAttribute('data-bn'), 10);
+    var i = cfg.bnUnits.indexOf(u);
+    if (i === -1) cfg.bnUnits.push(u); else cfg.bnUnits.splice(i, 1);
   });
 
   /* ---- 选项组 ---- */
@@ -170,11 +256,43 @@
   });
   bindGroup('countOpts', 'count', 'data-count', renderShortHint);
   bindGroup('shortOpts', 'shortCount', 'data-short', renderShortHint);
-  bindGroup('diffOpts', 'diff', 'data-diff', function (v) {
+  function pickOpt(groupId, attr, val) {
+    var kids = U.el(groupId).children;
+    for (var i = 0; i < kids.length; i++) {
+      kids[i].classList.toggle('on', kids[i].getAttribute(attr) === String(val));
+    }
+  }
+  /* 难度档切换：北师大档要连带换掉「范围」那一组控件 */
+  function applyDiff(v) {
     U.el('diffHint').textContent = DIFF_HINT[v] || '';
-  });
+    /* 压轴档按北师大教材出，范围交给章节选择器；上面那个「全册/九上/九下」用不上，藏起来免得误导 */
+    var isBn = (v === 'zz' || v === 'bn2');
+    U.el('scopeField').style.display = isBn ? 'none' : 'block';
+    U.el('bnPicker').style.display = isBn ? 'block' : 'none';
+    if (isBn) {
+      var wantTier = (v === 'bn2') ? 'bn2' : 'bn';
+      if (wantTier !== bnTier) {
+        /* 九上章号是 1–6、九下是 1–3，不清空会把九上的章号带进九下卷 */
+        bnTier = wantTier;
+        cfg.bnUnits = [];
+        renderBnPicker(bnTier);
+      }
+      U.el('chapterPicker').style.display = 'none';
+      /* 压轴档的卷面是固定的，跟着切题量，别让人选成 25 题 3 道解答 */
+      cfg.count = BN_SHAPE.count;
+      cfg.shortCount = BN_SHAPE.short;
+      pickOpt('countOpts', 'data-count', BN_SHAPE.count);
+      pickOpt('shortOpts', 'data-short', BN_SHAPE.short);
+      renderShortHint();
+    } else if (cfg.scope === 'ch') {
+      U.el('chapterPicker').style.display = 'block';
+    }
+  }
+  bindGroup('diffOpts', 'diff', 'data-diff', applyDiff);
   bindGroup('modeOpts', 'mode', 'data-mode', renderModeHint);
   U.el('diffHint').textContent = DIFF_HINT[cfg.diff];
+  renderBnPicker(bnTier);
+  applyDiff(cfg.diff);   /* 默认档位是北师大压轴，初始化时也要把控件摆对 */
 
   function renderShortHint() {
     var n = Math.min(cfg.shortCount, cfg.count);
@@ -291,12 +409,18 @@
       return;
     }
 
+    var isBn = (cfg.diff === 'zz' || cfg.diff === 'bn2');
+    var tier = (cfg.diff === 'bn2') ? 'bn2' : (isBn ? 'bn' : '');
     var paper = E.generatePaper({
-      scope: scope,
+      /* 压轴档按北师大教材归位出题，不受上面「全册 / 九上 / 按章」的范围影响 */
+      scope: isBn ? {} : scope,
+      tier: tier,
+      bnUnits: cfg.bnUnits,
       count: cfg.count,
       shortCount: Math.min(cfg.shortCount, cfg.count),
+      choiceQuota: isBn ? BN_SHAPE.choice : null,
       ratio: RATIO[cfg.diff],
-      hardMode: (cfg.diff === 'sd' || cfg.diff === 'hard'),
+      hardMode: (cfg.diff === 'sd' || cfg.diff === 'hard' || isBn),
       mode: cfg.mode,
       focus: focus,
       probe: probe,
@@ -315,7 +439,7 @@
     /* 只保留一张待批改的卷 */
     S.state.tests = S.state.tests.filter(function (t) { return t.done; });
 
-    var label = scopeLabel(scope);
+    var label = isBn ? (tier === 'bn2' ? '北师大九下 · 压轴' : '北师大九上 · 压轴') : scopeLabel(scope);
     var test = S.createTest(paper, label);
 
     lastPaper = paper;
@@ -346,8 +470,11 @@
     var objN = paper.items.filter(function (it) { return it.type === 'choice' || it.type === 'numeric'; }).length;
     var shortN = total - objN;
     var minutes = Math.round(objN * 1.2 + shortN * 6);
-    var titleSuffix = paper.mode === 'probe' ? '根因验证卷'
+    var titleSuffix = paper.tier === 'bn' ? '北师大九上 · 压轴卷'
+                    : paper.tier === 'bn2' ? '北师大九下 · 压轴卷'
+                    : paper.mode === 'probe' ? '根因验证卷'
                     : paper.mode === 'mixed' ? '综合卷' : '诊断卷';
+    var fullMark = paper.items.reduce(function (a, it) { return a + (it.points || 0); }, 0);
 
     var head =
       '<div class="paper student-paper">' +
@@ -358,6 +485,7 @@
       '<span>日期 <span class="fill"></span></span>' +
       '<span>建议用时 ' + minutes + ' 分钟</span>' +
       '<span>共 ' + total + ' 题</span>' +
+      (fullMark ? '<span>满分 ' + fullMark + ' 分</span>' : '') +
       '</div></div>';
 
     var body = paper.sections.map(function (sec) {
@@ -387,9 +515,11 @@
       var chunk = objItems.slice(i, i + 5);
       while (chunk.length < 5) chunk.push(null);
       keyRows += '<tr>' + chunk.map(function (it) {
-        return '<td>' + (it ? it.no : '') + '</td>';
+        return it ? '<td>' + it.no + '</td>' : '<td class="empty"></td>';
       }).join('') + '</tr><tr>' + chunk.map(function (it) {
-        return '<td class="ans-cell">' + (it ? U.esc(E.question(it.qid).answer) : '') + '</td>';
+        return it
+          ? '<td class="ans-cell">' + U.esc(E.question(it.qid).answer) + '</td>'
+          : '<td class="ans-cell empty"></td>';
       }).join('') + '</tr>';
     }
 
@@ -414,16 +544,21 @@
         var q = E.question(it.qid);
         var t = E.topic(it.topicId);
         var isShort = (q.type === 'short' || q.type === 'self');
+        /* 压轴卷按北师大版出，标签就得说北师大章节（九上说九上、九下说九下）；
+           普通卷还是按题库原本的年级走。 */
+        var where = ((paper.tier === 'bn' && t.bnUnit) ||
+                     (paper.tier === 'bn2' && t.bn2Unit))
+          ? E.bnLabel(t, paper.tier) : E.gradeLabel(t.grade);
         var body = isShort
           ? '<p class="small pre" style="margin:0">' + U.esc(q.solution || q.explanation) + '</p>'
           : '<p class="small muted" style="margin:0">' + U.esc(q.explanation) + '</p>';
         return '<div class="q"><span class="q-no">' + it.no + '.</span>' +
-          '<p class="q-prompt">' + U.esc(q.prompt) + '</p>' +
+          '<p class="q-prompt">' + U.esc(q.prompt).replace(/\n/g, '<br>') + '</p>' +
           U.figHTML(q) +
           choicesHTMLFor(q) +
           '<p class="small" style="margin:0 0 4px"><b>答案：</b>' + U.esc(q.answer) +
           (it.points ? '　<span class="q-tag">' + it.points + ' 分</span>' : '') +
-          '　<span class="q-tag">' + U.esc(t.name) + ' · ' + E.gradeLabel(t.grade) +
+          '　<span class="q-tag">' + U.esc(t.name) + ' · ' + U.esc(where) +
           (it.isProbe ? ' · 根因探测' : '') + '</span></p>' +
           body +
           '</div>';

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-用 GitHub API 把 g9-math/ 提交到 fork 的 dev 分支。
+用 GitHub API 把本目录（g9/math）提交到 fork 的 dev 分支，落到远端 g9-math/ 下。
 （本机 github.com 主站不可达，git push 走不通，只能走 api.github.com）
 
-用法: python build/push_api.py
+用法:
+    python build/push_api.py -m "提交说明"
+    python build/push_api.py -m-file /tmp/msg.txt
 """
+import argparse
 import json
 import os
 import subprocess
@@ -17,7 +20,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TMP = os.path.join(ROOT, ".push_payload.json")
 
 # 不提交的文件
-SKIP_DIRS = {".git", "node_modules", "shots", "__pycache__"}
+# versions/ 是本地题库快照（20 个版本 × 10 个文件 ≈ 27 MB），只作本机备份，不进仓库
+SKIP_DIRS = {".git", "node_modules", "shots", "__pycache__", "versions"}
 SKIP_FILES = {".push_payload.json"}
 
 
@@ -50,6 +54,18 @@ def walk():
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-m", "--message", default="", help="提交说明")
+    ap.add_argument("-m-file", "--message-file", default="", help="从文件读提交说明")
+    args = ap.parse_args()
+
+    msg = args.message
+    if args.message_file:
+        with open(args.message_file, encoding="utf-8") as f:
+            msg = f.read()
+    if not msg.strip():
+        raise SystemExit("必须用 -m 或 -m-file 给一条提交说明")
+
     files = walk()
     print("待提交文件 %d 个：" % len(files))
     for rel, full in files:
@@ -83,16 +99,6 @@ def main():
     print("\n新树 %s" % tree["sha"][:7])
 
     # 3. 建提交
-    msg = (
-        "g9-math：题图补到 131 张，卷面构成向中考靠拢\n\n"
-        "- 客观题新增 111 张内联 SVG 题图（原来只有自编解答题的 20 张）\n"
-        "- 出卷加选择题占比约束：25 题约 12 选择 + 10 填空 + 3 解答\n"
-        "- 修掉题图把答案标在图上（求的量一律标「?」）\n"
-        "- 修掉「图中有哪对相似三角形」「扇形统计图」两道题干提到图却没有图的题\n"
-        "- 手机打印改同步调用 window.print()，微信/桌面图标环境给替代说明\n"
-        "- 出卷模式切换不再用 pointer-events 静默禁用\n"
-        "- node tests/test.js 61 项、tests/test_quiz.js 36 项通过\n"
-    )
     new_commit = gh(["repos/%s/git/commits" % REPO],
                     {"message": msg, "tree": tree["sha"], "parents": [parent]},
                     method="POST")

@@ -1,0 +1,265 @@
+[
+  {
+    "id": "9b001",
+    "topicId": "bn9_t01",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "如图，⊙O 的半径为 5，弦 AB = 8，点 C 是圆上一点（不与 A、B 重合）。甲、乙、丙三人各说了一句话：\n甲：圆心 O 到弦 AB 的距离是 3；\n乙：若 C 在优弧 AB 上，则 sin∠ACB = 4/5；\n丙：点 C 到直线 AB 的距离的最大值是 5。\n其中说法正确的有",
+    "choices": [
+      { "key": "A", "text": "0 个" },
+      { "key": "B", "text": "1 个" },
+      { "key": "C", "text": "2 个" },
+      { "key": "D", "text": "3 个" }
+    ],
+    "answer": "C",
+    "explanation": "甲对：作 OH ⊥ AB 于 H，则 AH = 4，OH = √(5²−4²) = 3。\n乙对：∠ACB 是弦 AB 所对的圆周角，由正弦定理 sin∠ACB = AB/(2R) = 8/10 = 4/5。（C 在劣弧上时 ∠ACB 为钝角，正弦值仍是 4/5。）\n丙错：C 到直线 AB 距离最大时，C 在优弧中点，此时距离 = OH + 半径 = 3 + 5 = 8，不是 5。\n所以正确的是甲、乙两个，选 C。",
+    "fig": "bn9_001"
+  },
+  {
+    "id": "9b002",
+    "topicId": "bn9_t03",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "直线 y = x + 1 与双曲线 y = 6/x 交于 A、B 两点，则 △AOB（O 为坐标原点）的面积是",
+    "choices": [
+      { "key": "A", "text": "5/2" },
+      { "key": "B", "text": "5" },
+      { "key": "C", "text": "15/2" },
+      { "key": "D", "text": "6" }
+    ],
+    "answer": "A",
+    "explanation": "联立 x + 1 = 6/x，得 x² + x − 6 = 0，即 (x+3)(x−2) = 0，所以 x = 2 或 x = −3。\n两个交点为 A(2, 3)、B(−3, −2)，AB = √(5² + 5²) = 5√2。\n原点 O 到直线 x − y + 1 = 0 的距离 d = |1|/√2 = √2/2。\nS△AOB = ½ × 5√2 × √2/2 = 5/2，选 A。\n（也可以把 △AOB 沿 y 轴切成两块：直线交 y 轴于 (0,1)，两块面积分别为 ½×1×2 与 ½×1×3，合计 5/2。）"
+  },
+  {
+    "id": "9b003",
+    "topicId": "cnm_277",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "计算 2sin30° + tan45° − 3tan30°·cos30° 的值是",
+    "choices": [
+      { "key": "A", "text": "0" },
+      { "key": "B", "text": "1/2" },
+      { "key": "C", "text": "1" },
+      { "key": "D", "text": "3/2" }
+    ],
+    "answer": "B",
+    "explanation": "sin30° = 1/2，tan45° = 1，tan30° = √3/3，cos30° = √3/2。\n原式 = 2 × 1/2 + 1 − 3 × (√3/3) × (√3/2) = 1 + 1 − 3 × (3/6) = 2 − 3/2 = 1/2。\n注意 tan30°·cos30° 可以先用 tan = sin/cos 化简：(√3/3)(√3/2) = 1/2，再乘 3 得 3/2。选 B。"
+  },
+  {
+    "id": "9b004",
+    "topicId": "cnm_280",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "如图，某堤坝的横断面是梯形 ABCD，坝顶 BC = 4 m，坝高 6 m。背水坡 AB 的坡度 i = 1 : 1.5，迎水坡 CD 的坡度 i = 1 : 2（坡度 = 铅直高度 : 水平宽度），则坝底 AD 的长为",
+    "choices": [
+      { "key": "A", "text": "19 m" },
+      { "key": "B", "text": "22 m" },
+      { "key": "C", "text": "25 m" },
+      { "key": "D", "text": "28 m" }
+    ],
+    "answer": "C",
+    "explanation": "坡度 1 : 1.5 表示每升高 1 m 水平前进 1.5 m，所以 AB 的水平宽度 = 6 × 1.5 = 9 m；\n坡度 1 : 2 表示每升高 1 m 水平前进 2 m，所以 CD 的水平宽度 = 6 × 2 = 12 m。\nAD = 9 + 4 + 12 = 25 m，选 C。\n常见错误是把坡度当成坡角，或者把「1 : 1.5」算成水平 6 ÷ 1.5 = 4 m。",
+    "fig": "bn9_004"
+  },
+  {
+    "id": "9b005",
+    "topicId": "cnm_264",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "直角三角形的两条直角边分别为 6 和 8，则它的内切圆半径与外接圆半径之比为",
+    "choices": [
+      { "key": "A", "text": "1 : 2" },
+      { "key": "B", "text": "2 : 5" },
+      { "key": "C", "text": "3 : 5" },
+      { "key": "D", "text": "1 : 3" }
+    ],
+    "answer": "B",
+    "explanation": "斜边 = √(6² + 8²) = 10。\n直角三角形的外接圆半径 R = 斜边的一半 = 5（外心是斜边中点）。\n内切圆半径 r = (a + b − c)/2 = (6 + 8 − 10)/2 = 2，也可用面积法：r = 面积 ÷ 半周长 = 24 ÷ 12 = 2。\n所以 r : R = 2 : 5，选 B。"
+  },
+  {
+    "id": "9b006",
+    "topicId": "cnm_258",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "一个圆锥的母线长为 10，底面半径为 6，则它的侧面展开图的圆心角是",
+    "choices": [
+      { "key": "A", "text": "180°" },
+      { "key": "B", "text": "200°" },
+      { "key": "C", "text": "216°" },
+      { "key": "D", "text": "240°" }
+    ],
+    "answer": "C",
+    "explanation": "侧面展开图是一个扇形，扇形的半径是母线 10，弧长等于底面圆周长 2π × 6 = 12π。\n设圆心角为 n，则 nπ × 10 / 180 = 12π，解得 n = 216。选 C。\n记忆要点：圆锥侧面展开后，扇形的「半径」是母线而不是底面半径，这两个量最容易搞混。"
+  },
+  {
+    "id": "9b007",
+    "topicId": "cnm_254",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "如图，AB 是 ⊙O 的直径，弦 CD ⊥ AB 于点 E，若 AE = 2，BE = 8，则 CD 的长为",
+    "choices": [
+      { "key": "A", "text": "4" },
+      { "key": "B", "text": "4√2" },
+      { "key": "C", "text": "6" },
+      { "key": "D", "text": "8" }
+    ],
+    "answer": "D",
+    "explanation": "由 AE = 2、BE = 8 得直径 AB = 10，半径 R = 5，圆心 O 到 E 的距离 OE = 5 − 2 = 3。\n由垂径定理，CE 是半弦，在 Rt△OCE 中 CE = √(R² − OE²) = √(25 − 9) = 4。\n所以 CD = 2CE = 8，选 D。\n另法（射影定理）：连接 AC、BC，AB 是直径故 ∠ACB = 90°，CE 是斜边上的高，CE² = AE·BE = 2 × 8 = 16，CE = 4，CD = 8。两种方法结果一致。",
+    "fig": "bn9_007"
+  },
+  {
+    "id": "9b008",
+    "topicId": "cnm_242",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "某蓄电池的电压为定值，使用此电源时，电流 I（A）与电阻 R（Ω）成反比例。当 R = 5 Ω 时，I = 2 A。若规定电流不得超过 0.5 A，则电阻 R 应满足",
+    "choices": [
+      { "key": "A", "text": "R ≥ 10 Ω" },
+      { "key": "B", "text": "R ≥ 20 Ω" },
+      { "key": "C", "text": "R ≤ 20 Ω" },
+      { "key": "D", "text": "R ≥ 40 Ω" }
+    ],
+    "answer": "B",
+    "explanation": "由 I = U/R 得 U = IR = 2 × 5 = 10（V），所以 I = 10/R。\n要求 I ≤ 0.5，即 10/R ≤ 0.5。因为 R > 0，两边乘 R 不变号：10 ≤ 0.5R，得 R ≥ 20 Ω。选 B。\n注意「电流不超过」对应「电阻不小于」——反比例关系里两个量反向变化，不等式方向容易写反。"
+  },
+  {
+    "id": "9b009",
+    "topicId": "cnm_263",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "如图，PA、PB 分别切 ⊙O 于 A、B 两点，OP = 5，⊙O 的半径为 3，则 sin∠APB 的值为",
+    "choices": [
+      { "key": "A", "text": "3/5" },
+      { "key": "B", "text": "4/5" },
+      { "key": "C", "text": "24/25" },
+      { "key": "D", "text": "12/25" }
+    ],
+    "answer": "C",
+    "explanation": "连接 OA、OB。因为 PA 是切线，所以 OA ⊥ PA，Rt△OAP 中 OA = 3，OP = 5，PA = 4。\n由切线长定理，PO 平分 ∠APB。设 ∠APO = θ，则 sinθ = OA/OP = 3/5，cosθ = PA/OP = 4/5。\n所以 sin∠APB = sin2θ = 2sinθcosθ = 2 × 3/5 × 4/5 = 24/25。选 C。\n易错点：直接把 sin∠APB 当成 sinθ = 3/5（那是半角的正弦），漏掉了二倍角这一步。",
+    "fig": "bn9_009"
+  },
+  {
+    "id": "9b010",
+    "topicId": "cnm_257",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "在半径为 6 的圆中，120° 的圆心角所对的弓形（劣弧与弦围成的部分）面积是",
+    "choices": [
+      { "key": "A", "text": "12π − 9√3" },
+      { "key": "B", "text": "12π − 18√3" },
+      { "key": "C", "text": "6π − 9√3" },
+      { "key": "D", "text": "12π − 6√3" }
+    ],
+    "answer": "A",
+    "explanation": "弓形面积 = 扇形面积 − 三角形面积。\n扇形面积 = 120/360 × π × 6² = 12π。\n三角形由两条半径和一条弦组成，两边为 6、6，夹角 120°，面积 = ½ × 6 × 6 × sin120° = 18 × √3/2 = 9√3。\n所以弓形面积 = 12π − 9√3，选 A。"
+  },
+  {
+    "id": "9b011",
+    "topicId": "cnm_239",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "如图，点 A 是双曲线 y = k/x 上一点，过 A 作 AB ⊥ x 轴于点 B，连接 OA。若 △AOB 的面积为 5，且点 A 在第二象限，则 k = ______。",
+    "answer": "−10",
+    "explanation": "过双曲线上一点作坐标轴的垂线，与原点围成的直角三角形面积为 |k|/2，所以 |k|/2 = 5，|k| = 10。\n点 A 在第二象限，说明 x < 0、y > 0，故 k = xy < 0，所以 k = −10。\n只写 10 是常见错误——面积只能定出 |k|，符号必须靠象限判断。",
+    "fig": "bn9_011"
+  },
+  {
+    "id": "9b012",
+    "topicId": "cnm_251",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "⊙O 中一条弦 AB = 24，它所对的劣弧上的弓形高为 8，则 ⊙O 的半径是 ______。",
+    "answer": "13",
+    "explanation": "设半径为 r，圆心到弦的距离为 d，则弓形高 h = r − d，即 d = r − 8。\n由垂径定理，半弦为 12，于是 (r − 8)² + 12² = r²。\n展开：r² − 16r + 64 + 144 = r²，得 16r = 208，r = 13。\n检验：d = 5，5² + 12² = 169 = 13²，成立。"
+  },
+  {
+    "id": "9b013",
+    "topicId": "cnm_266",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "一个正三角形的边心距为 2，则它的边长是 ______。",
+    "answer": "4√3",
+    "explanation": "正三角形的边心距就是内切圆半径 r = 2。\n正三角形中，边心距 r、外接圆半径 R、边长 a 的关系是 R = 2r = 4，a = √3 R = 4√3。\n也可以用 30° 直角三角形：边心距对应 30° 角的邻边，半边长对应对边，半边长 = r·tan60° = 2√3，所以 a = 4√3。"
+  },
+  {
+    "id": "9b014",
+    "topicId": "cnm_276",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "在 Rt△ABC 中，∠C = 90°，若 tan A = 2，则 sin A = ______。",
+    "answer": "2√5/5",
+    "explanation": "设 ∠A 的对边 a = 2k，邻边 b = k（k > 0），则斜边 c = √(4k² + k²) = √5 k。\n所以 sin A = a/c = 2k/(√5 k) = 2/√5 = 2√5/5。\n也可以写成 2/√5，但分母要有理化，中考按 2√5/5 给分。"
+  },
+  {
+    "id": "9b015",
+    "topicId": "cnm_263",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "PA、PB 分别切 ⊙O 于 A、B，若 ∠APB = 60°，PA = 3，则 ⊙O 的半径是 ______。",
+    "answer": "√3",
+    "explanation": "连接 OA、OP。PA 是切线，所以 OA ⊥ PA；由切线长定理，OP 平分 ∠APB，∠APO = 30°。\n在 Rt△OAP 中，tan∠APO = OA/PA，即 tan30° = r/3。\n所以 r = 3 × √3/3 = √3。"
+  },
+  {
+    "id": "9b016",
+    "topicId": "cnm_257",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "一个扇形的半径为 6，弧长为 4π，则这个扇形的面积是 ______。",
+    "answer": "12π",
+    "explanation": "扇形面积可以用 S = ½ lR 直接算，不必先求圆心角：S = ½ × 4π × 6 = 12π。\n若先求圆心角：nπ×6/180 = 4π 得 n = 120，再用 S = 120/360 × π × 36 = 12π，结果一致。"
+  },
+  {
+    "id": "9b017",
+    "topicId": "bn9_t04",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "在 △ABC 中，∠B = 60°，∠C = 45°，AB = 4，则 BC 的长是 ______。",
+    "answer": "2 + 2√3",
+    "explanation": "作 AD ⊥ BC 于 D，把原三角形拆成两个直角三角形。\n在 Rt△ABD 中，AD = AB·sin60° = 4 × √3/2 = 2√3，BD = AB·cos60° = 2。\n在 Rt△ACD 中，∠C = 45°，所以 DC = AD = 2√3。\n所以 BC = BD + DC = 2 + 2√3。\n注意：不能直接对 △ABC 用正弦定理后取近似值，题目没要求近似时必须保留根号。"
+  },
+  {
+    "id": "9b018",
+    "topicId": "cnm_255",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "四边形 ABCD 内接于 ⊙O，若 ∠A : ∠B : ∠C = 2 : 3 : 4，则 ∠D = ______°。",
+    "answer": "90",
+    "explanation": "圆内接四边形的对角互补，即 ∠A + ∠C = 180°，∠B + ∠D = 180°。\n设 ∠A = 2x，∠B = 3x，∠C = 4x。由 2x + 4x = 180° 得 x = 30°。\n所以 ∠B = 90°，∠D = 180° − 90° = 90°。\n验证：∠A = 60°，∠C = 120°，和为 180°，符合。"
+  },
+  {
+    "id": "9b031",
+    "topicId": "bn9_t02",
+    "type": "choice",
+    "difficulty": "zz",
+    "prompt": "如图，在矩形 ABCD 中，AB = 6，BC = 8，点 P 是矩形内的一动点，且始终保持 AP = 4，则 PC 的最小值是",
+    "choices": [
+      { "key": "A", "text": "2" },
+      { "key": "B", "text": "4" },
+      { "key": "C", "text": "6" },
+      { "key": "D", "text": "8" }
+    ],
+    "answer": "C",
+    "explanation": "题目里没有圆，但「AP 恒等于 4」说明 P 的轨迹是以 A 为圆心、4 为半径的圆（在矩形内的部分是一段圆弧）。\n要求 PC 最小，先看 C 到圆心 A 的距离：AC = √(6² + 8²) = 10。\nC 在圆外，圆上点到 C 的距离最小值 = AC − 半径 = 10 − 4 = 6，取到最小时 P 在 AC 上。\n所以 PC 的最小值是 6，选 C。\n这类题的关键是先把隐藏的圆补出来，再套「圆心距 ± 半径」。",
+    "fig": "bn9_031"
+  },
+  {
+    "id": "9b032",
+    "topicId": "bn9_t02",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "如图，在 Rt△ABC 中，∠ACB = 90°，AC = 3，BC = 4，点 P 是平面内一点，且始终满足 ∠APB = 90°，则 CP 的最大值是 ______。",
+    "answer": "5",
+    "explanation": "∠APB = 90° 说明 P 在以 AB 为直径的圆上（A、B 两点除外）。\n由勾股定理 AB = √(3² + 4²) = 5，所以这个圆的圆心 M 是 AB 的中点，半径 r = 2.5。\n因为 ∠ACB = 90°，C 也在这个圆上，且 M 是直角三角形斜边的中点，所以 CM = r = 2.5。\n圆上一点 P 到定点 C 的距离最大值 = CM + r = 2.5 + 2.5 = 5，取到最值时 C、M、P 三点共线且 M 在中间。\n所以 CP 的最大值是 5。",
+    "fig": "bn9_032"
+  },
+  {
+    "id": "9b033",
+    "topicId": "bn9_t03",
+    "type": "numeric",
+    "difficulty": "zz",
+    "prompt": "如图，点 A 是双曲线 y = 6/x 上一点，过 A 分别作 x 轴、y 轴的垂线，垂足为 B、C，D 是线段 AC 的中点，则 △OBD 的面积是 ______。",
+    "answer": "3",
+    "explanation": "设 A 的坐标为 (a, 6/a)（a > 0），则 B(a, 0)、C(0, 6/a)，矩形 OBAC 的面积为 a × 6/a = 6，正好等于 |k|。\nD 是 AC 的中点，所以 D(a/2, 6/a)。\n△OBD 以 OB 为底，底长 a，高是 D 到 x 轴的距离 6/a。\n面积 = ½ × a × 6/a = 3，与 a 的取值无关。\n这也说明：只要 D 是 AC 中点，△OBD 的面积恒为 |k|/2。",
+    "fig": "bn9_033"
+  }
+]

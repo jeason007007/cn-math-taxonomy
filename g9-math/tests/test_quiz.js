@@ -77,7 +77,10 @@ eq(Q.checkChoice('', 'B'), false, '没选');
 
 console.log('== 真实题目抽检 ==');
 
-var core = E.data.topics.filter(function (t) { return t.isCore; }).map(function (t) { return t.id; });
+/* 出卷池 = 初三本体 + 北师大九上/九下的归位点。
+   菱形、矩形这些在沪科版是八年级，但在北师大版是九年级正课，进卷是对的；
+   七、八年级的纯先修点（小学的更是）不能进。 */
+var core = E.coreTopics().map(function (t) { return t.id; });
 var nums = E.data.questions.filter(function (q) {
   return q.type === 'numeric' && core.indexOf(q.topicId) !== -1;
 });
@@ -124,7 +127,11 @@ ok(allObj, '手机卷不含解答题');
 var allCore = p.items.every(function (it) {
   return core.indexOf(it.topicId) !== -1;
 });
-ok(allCore, '手机卷只考初三本体，不考小学先修题');
+ok(allCore, '手机卷只考正课范围（初三本体 + 北师大归位点）');
+ok(p.items.every(function (it) {
+  var t = E.topic(it.topicId);
+  return t && t.grade >= 7;
+}), '手机卷不掺七、八年级的纯先修题');
 
 var types = {};
 p.items.forEach(function (it) { types[E.question(it.qid).type] = 1; });
